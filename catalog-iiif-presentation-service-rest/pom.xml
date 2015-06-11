@@ -72,6 +72,10 @@
             <artifactId>spring-cloud-config-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.projectreactor.spring</groupId>
+            <artifactId>reactor-spring-context</artifactId>
+        </dependency>
+        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
@@ -84,6 +88,11 @@
             <groupId>no.nb.microservices.iiifpresentation</groupId>
             <artifactId>catalog-iiif-presentation-service-model</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nb.microservices</groupId>
+            <artifactId>catalog-metadata-model</artifactId>
+            <version>0.0.1-7fd84ce1bb82b40016ad22e673f3d8c4f38a9929-59</version>
         </dependency>
 
         <!-- Testing -->
