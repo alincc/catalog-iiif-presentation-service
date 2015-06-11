@@ -1,0 +1,6 @@
+{
+  "generator-spring-microservice": {
+    "packageName": "no.nb.microservices.iiifpresentation",
+    "packageFolder": "no/nb/microservices/iiifpresentation"
+  }
+}

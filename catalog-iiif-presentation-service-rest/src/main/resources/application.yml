@@ -1,0 +1,24 @@
+info:
+  app:
+    name: catalog-iiif-presentation-service
+    description: IIIF Presentation API
+
+endpoints:
+  restart:
+    enabled: true
+  refresh:
+    enabled: true
+
+server:
+  port: 8050
+
+---
+spring:
+    profiles: docker
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://discovery:8761/eureka/
