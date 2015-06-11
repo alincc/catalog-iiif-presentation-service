@@ -79,7 +79,12 @@
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>1.5.3-M1</version>
-        </dependency>  
+        </dependency>
+        <dependency>
+            <groupId>no.nb.microservices.iiifpresentation</groupId>
+            <artifactId>catalog-iiif-presentation-service-model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
         <!-- Testing -->
         <dependency>
