@@ -3,20 +3,13 @@ package no.nb.microservices.iiifpresentation.service;
 import no.nb.microservices.catalogmetadata.model.mods.v3.Mods;
 import no.nb.microservices.iiifpresentation.model.LabelValue;
 import no.nb.microservices.iiifpresentation.model.Manifest;
-import no.nb.microservices.iiifpresentation.reactor.LatchException;
-import no.nb.microservices.iiifpresentation.reactor.MetadataWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.Reactor;
-import reactor.event.Event;
-import reactor.function.Consumer;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
-import static reactor.event.selector.Selectors.$;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by andreasb on 11.06.15.
@@ -25,30 +18,16 @@ import static reactor.event.selector.Selectors.$;
 public class ManifestService {
 
     private final MetadataService metadataService;
-    private final Reactor reactor;
-
-    private Consumer<Event<MetadataWrapper>> metadataConsumer;
 
     @Autowired
-    public ManifestService(MetadataService metadataService, Reactor reactor, Consumer<Event<MetadataWrapper>> metadataConsumer) {
-        this.reactor = reactor;
+    public ManifestService(MetadataService metadataService) {
         this.metadataService = metadataService;
-        this.metadataConsumer = metadataConsumer;
     }
 
-    @PostConstruct
-    void init() {
-        reactor.on($("metadata"), metadataConsumer);
-    }
-
-    /**
-     * TODO: This method must do async calls to get metadata and structure information
-     * @param id
-     * @return
-     */
-    public Manifest getManifest(String id) {
-        Mods mods = metadataService.getModsById(id);
+    public Manifest getManifest(String id) throws InterruptedException, ExecutionException {
         Manifest manifest = new Manifest();
+        Future<Mods> modsFuture = metadataService.getModsById(id);
+        Mods mods = modsFuture.get();
 
         // Label
         manifest.setLabel((mods.getTitleInfos().size() > 0) ? mods.getTitleInfos().get(0).getTitle() : "No title");
@@ -75,24 +54,5 @@ public class ManifestService {
         List<LabelValue> metadataList = new ArrayList<>();
 
         return metadataList;
-    }
-
-    private Mods consumeMetadata(String id) {
-        final CountDownLatch latch = new CountDownLatch(1);
-        Mods mods = null;
-
-        reactor.notify("metadata", Event.wrap(new MetadataWrapper(id, mods, latch)));
-
-        waitForAllItemsToFinish(latch);
-
-        return mods;
-    }
-
-    private void waitForAllItemsToFinish(final CountDownLatch latch) {
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            throw new LatchException(e);
-        }
     }
 }

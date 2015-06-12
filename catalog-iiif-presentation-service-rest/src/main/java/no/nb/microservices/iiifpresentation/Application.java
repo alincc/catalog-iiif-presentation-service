@@ -10,6 +10,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.cloud.security.oauth2.resource.EnableOAuth2Resource;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -17,6 +18,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType
 @EnableFeignClients
 @EnableCircuitBreaker
 @EnableOAuth2Resource
+@EnableAsync
 @RefreshScope
 @EnableHypermediaSupport(type= {HypermediaType.HAL})
 public class Application {
