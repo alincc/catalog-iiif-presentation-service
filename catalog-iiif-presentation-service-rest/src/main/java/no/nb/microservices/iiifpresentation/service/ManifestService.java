@@ -26,32 +26,55 @@ public class ManifestService {
 
     public Manifest getManifest(String id) throws InterruptedException, ExecutionException {
         Manifest manifest = new Manifest();
-        Future<Mods> modsFuture = metadataService.getModsById(id);
+        Future<Mods> modsFuture = metadataService.getModsByIdAsync(id);
+
         Mods mods = modsFuture.get();
 
+        // Context
+        manifest.setContext("");
+
+        // Type
+        manifest.setType("");
+
+        // ID
+        manifest.setId("");
+
         // Label
-        manifest.setLabel((mods.getTitleInfos().size() > 0) ? mods.getTitleInfos().get(0).getTitle() : "No title");
+        manifest.setLabel((mods.getTitleInfos() != null && mods.getTitleInfos().size() > 0) ? mods.getTitleInfos().get(0).getTitle() : "Untitled");
+
+        // Metadata
+        manifest.setMetadata(buildMetadataList(mods));
 
         // Description
         // TODO: Build a longer description of the object
         manifest.setDescription("");
 
-        // Metadata
-        manifest.setMetadata(buildMetadataList(mods));
-
         // License
-        // TODO: Fix
         manifest.setLicense("");
 
         // Attribution
-        // TODO: Fix
         manifest.setAttribution("");
+
+        // Service
+        manifest.setService(null);
+
+        // See also
+        manifest.setSeeAlso(null);
+
+        // Within
+        manifest.setWithin("");
+
+        // Sequences
+
+        // Structures
 
         return manifest;
     }
 
     private List<LabelValue> buildMetadataList(Mods mods) {
         List<LabelValue> metadataList = new ArrayList<>();
+
+        metadataList.add(new LabelValue("Publisher", mods.getOriginInfo().getPublisher()));
 
         return metadataList;
     }

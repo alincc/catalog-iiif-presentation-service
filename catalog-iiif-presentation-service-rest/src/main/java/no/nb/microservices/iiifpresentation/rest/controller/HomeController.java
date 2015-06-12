@@ -32,7 +32,8 @@ public class HomeController {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "It looks like we have a internal error in our application. The error have been logged and will be looked at by our development team")
-    public void defaultHandler() {
+    public void defaultHandler(Exception e) {
         // TODO: Log error and notify
+        e.printStackTrace();
     }
 }

@@ -22,7 +22,7 @@ public class HomeControllerTest {
 
     @Before
     public void setup() {
-        HomeController homeController = new HomeController();
+        HomeController homeController = new HomeController(null);
         mockMvc = MockMvcBuilders.standaloneSetup(homeController).build();
     }
 

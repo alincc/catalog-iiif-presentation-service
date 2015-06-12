@@ -7,6 +7,11 @@ public class LabelValue {
     private String label;
     private Object value;
 
+    public LabelValue(String label, Object value) {
+        this.label = label;
+        this.value = value;
+    }
+
     public String getLabel() {
         return label;
     }

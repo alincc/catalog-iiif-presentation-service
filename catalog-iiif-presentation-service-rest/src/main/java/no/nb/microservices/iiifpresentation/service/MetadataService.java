@@ -1,10 +1,10 @@
 package no.nb.microservices.iiifpresentation.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.cache.annotation.CacheResult;
 import no.nb.microservices.catalogmetadata.model.mods.v3.Mods;
 import no.nb.microservices.iiifpresentation.repository.MetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +23,15 @@ public class MetadataService {
         this.metadataRepository = metadataRepository;
     }
 
-    @Async
+    @CacheResult
     @HystrixCommand(fallbackMethod = "getDefaultMods")
-    public Future<Mods> getModsById(String id) throws InterruptedException {
-        Mods mods = metadataRepository.getModsById(id);
-        return new AsyncResult<Mods>(mods);
+    public Future<Mods> getModsByIdAsync(String id) throws InterruptedException {
+        return new AsyncResult<Mods>(metadataRepository.getModsById(id));
     }
 
-    private Future<Mods> getDefaultMods(String id) throws InterruptedException {
-        return new AsyncResult<Mods>(new Mods());
+    private Mods getDefaultMods(String id) {
+        Mods mods = new Mods();
+        return mods;
     }
+
 }
