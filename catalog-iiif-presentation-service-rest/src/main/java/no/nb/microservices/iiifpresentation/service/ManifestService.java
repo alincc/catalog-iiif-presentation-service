@@ -1,6 +1,6 @@
 package no.nb.microservices.iiifpresentation.service;
 
-import no.nb.microservices.catalogmetadata.model.mods.v3.Mods;
+import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.iiifpresentation.model.LabelValue;
 import no.nb.microservices.iiifpresentation.model.Manifest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +17,18 @@ import java.util.concurrent.Future;
 @Service
 public class ManifestService {
 
-    private final MetadataService metadataService;
+    private final ItemService itemService;
 
     @Autowired
-    public ManifestService(MetadataService metadataService) {
-        this.metadataService = metadataService;
+    public ManifestService(ItemService itemService) {
+        this.itemService = itemService;
     }
 
     public Manifest getManifest(String id) throws InterruptedException, ExecutionException {
         Manifest manifest = new Manifest();
-        Future<Mods> modsFuture = metadataService.getModsByIdAsync(id);
+        Future<ItemResource> itemFuture = itemService.getItemByIdAsync(id);
 
-        Mods mods = modsFuture.get();
+        ItemResource item = itemFuture.get();
 
         // Context
         manifest.setContext("");
@@ -40,10 +40,10 @@ public class ManifestService {
         manifest.setId("");
 
         // Label
-        manifest.setLabel((mods.getTitleInfos() != null && mods.getTitleInfos().size() > 0) ? mods.getTitleInfos().get(0).getTitle() : "Untitled");
+        manifest.setLabel((item.getMetadata().getTitleInfo() != null) ? item.getMetadata().getTitleInfo().getTitle() : "Untitled");
 
         // Metadata
-        manifest.setMetadata(buildMetadataList(mods));
+        manifest.setMetadata(buildMetadataList(item));
 
         // Description
         // TODO: Build a longer description of the object
@@ -71,11 +71,10 @@ public class ManifestService {
         return manifest;
     }
 
-    private List<LabelValue> buildMetadataList(Mods mods) {
+    private List<LabelValue> buildMetadataList(ItemResource item) {
         List<LabelValue> metadataList = new ArrayList<>();
 
-
-        metadataList.add(new LabelValue("Publisher", ( mods.getOriginInfo() != null) ? mods.getOriginInfo().getPublisher() : "N/A"));
+        //metadataList.add(new LabelValue("Publisher", (item.getMetadata().getPublisher());
 
         return metadataList;
     }
