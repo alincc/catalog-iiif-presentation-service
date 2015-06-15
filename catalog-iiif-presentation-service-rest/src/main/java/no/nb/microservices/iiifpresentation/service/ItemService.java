@@ -34,7 +34,7 @@ public class ItemService {
     }
 
     private ItemResource getDefaultItem(String id) {
-        logger.warn("Failed to get item from catalog-item-service. Returning default item with id" + id);
+        logger.warn("Failed to get item from catalog-item-service. Returning default item with id " + id);
         ItemResource item = new ItemResource();
         return item;
     }
