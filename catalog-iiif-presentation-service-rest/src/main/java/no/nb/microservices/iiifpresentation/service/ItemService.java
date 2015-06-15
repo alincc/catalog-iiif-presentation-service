@@ -1,9 +1,10 @@
 package no.nb.microservices.iiifpresentation.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.cache.annotation.CacheResult;
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.iiifpresentation.repository.ItemRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -15,20 +16,25 @@ import java.util.concurrent.Future;
  */
 @Service
 public class ItemService {
-    ItemRepository itemRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
+
+    private ItemRepository itemRepository;
 
     @Autowired
     public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
     }
 
-    @CacheResult
-    @HystrixCommand(fallbackMethod = "getDefaultMods")
+    //@CacheResult TODO: This fails when uncommented
+    @HystrixCommand(fallbackMethod = "getDefaultItem")
     public Future<ItemResource> getItemByIdAsync(String id) throws InterruptedException {
+        logger.info("Fetching item from catalog-item-service by id " + id);
         return new AsyncResult<ItemResource>(itemRepository.getById(id));
     }
 
-    private ItemResource getDefaultMods(String id) {
+    private ItemResource getDefaultItem(String id) {
+        logger.warn("Failed to get item from catalog-item-service. Returning default item with id" + id);
         ItemResource item = new ItemResource();
         return item;
     }

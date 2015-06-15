@@ -3,6 +3,8 @@ package no.nb.microservices.iiifpresentation.service;
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.iiifpresentation.model.LabelValue;
 import no.nb.microservices.iiifpresentation.model.Manifest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.concurrent.Future;
  */
 @Service
 public class ManifestService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ManifestService.class);
 
     private final ItemService itemService;
 
@@ -40,7 +44,7 @@ public class ManifestService {
         manifest.setId("");
 
         // Label
-        manifest.setLabel((item.getMetadata().getTitleInfo() != null) ? item.getMetadata().getTitleInfo().getTitle() : "Untitled");
+        manifest.setLabel((item.getMetadata() != null && item.getMetadata().getTitleInfo() != null) ? item.getMetadata().getTitleInfo().getTitle() : "Untitled");
 
         // Metadata
         manifest.setMetadata(buildMetadataList(item));
