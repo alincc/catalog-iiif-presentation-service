@@ -74,7 +74,8 @@ public class ManifestService {
     private List<LabelValue> buildMetadataList(Mods mods) {
         List<LabelValue> metadataList = new ArrayList<>();
 
-        metadataList.add(new LabelValue("Publisher", mods.getOriginInfo().getPublisher()));
+
+        metadataList.add(new LabelValue("Publisher", ( mods.getOriginInfo() != null) ? mods.getOriginInfo().getPublisher() : "N/A"));
 
         return metadataList;
     }
