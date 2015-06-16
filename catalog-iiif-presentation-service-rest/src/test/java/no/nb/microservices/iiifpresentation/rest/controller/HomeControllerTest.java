@@ -1,37 +1,47 @@
 package no.nb.microservices.iiifpresentation.rest.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import no.nb.microservices.iiifpresentation.Application;
-import no.nb.microservices.iiifpresentation.model.Manifest;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
+import javax.servlet.http.HttpServletRequest;
+
+import no.nb.microservices.iiifpresentation.model.Manifest;
+import no.nb.microservices.iiifpresentation.service.IManifestService;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.RestTemplate;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.mock.web.MockHttpServletRequest;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebIntegrationTest("server.port: 0")
+@RunWith(MockitoJUnitRunner.class)
 public class HomeControllerTest {
 
-    @Value("${local.server.port}")
-    int port;
+    @Mock
+    private IManifestService manifestService;
     
-    RestTemplate restTemplate = new TestRestTemplate();
+    private HomeController homeController;
+    
+    @Before
+    public void setup() {
+        homeController = new HomeController(manifestService);
+    }
     
     @Test
     public void testGetManifest() {
-        final String identifier = "78234";
-        final String id = "http://localhost:" + port + "/iiif/" + identifier + "/manifest";
-        ResponseEntity<Manifest> result = restTemplate.getForEntity(id, Manifest.class);
+        final String itemId = "12345";
+        final HttpServletRequest request = new MockHttpServletRequest("GET", "/iiif/" + itemId + "/manifest");
         
-        assertTrue("Status code should be 2xx", result.getStatusCode().is2xxSuccessful());
-        assertEquals(id, result.getBody().getId());
+        when(manifestService.getManifest(itemId, "http://localhost/iiif/" + itemId + "/manifest")).thenReturn(new Manifest());
+        assertNotNull("Should return a manifest", homeController.getManifest(itemId, request));
     }
+    
+    @Test
+    public void testDefaultHandler() {
+        final String itemId = "12345";
+        final HttpServletRequest request = new MockHttpServletRequest("GET", "/iiif/" + itemId + "/manifest");
+        homeController.defaultHandler(request, new Exception("junit test exception"));
+    }
+    
 }
