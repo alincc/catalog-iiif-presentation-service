@@ -38,7 +38,7 @@ public class HomeController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful response") })
     @RequestMapping(value = "{itemId}/manifest", method = RequestMethod.GET)
     public Manifest getManifest(@PathVariable String itemId, HttpServletRequest request) {
-        String idUri = request.getScheme() + "://" + request.getLocalName() + ":" +  request.getLocalPort() + request.getRequestURI();
+        String idUri = request.getScheme() + "://" + request.getLocalName() + request.getRequestURI();
         return manifestService.getManifest(itemId, idUri);
     }
 
