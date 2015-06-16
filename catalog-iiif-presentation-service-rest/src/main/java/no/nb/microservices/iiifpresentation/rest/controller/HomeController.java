@@ -1,39 +1,45 @@
 package no.nb.microservices.iiifpresentation.rest.controller;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import javax.servlet.http.HttpServletRequest;
+
 import no.nb.microservices.iiifpresentation.model.Manifest;
-import no.nb.microservices.iiifpresentation.service.ManifestService;
+import no.nb.microservices.iiifpresentation.service.IManifestService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
-@RestController("/iiif")
+@RestController
+@RequestMapping("/iiif")
 @Api(value = "/iiif", description = "Home api")
 public class HomeController {
 
-    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
-    private final ManifestService manifestService;
+    private final IManifestService manifestService;
 
     @Autowired
-    public HomeController(ManifestService manifestService) {
+    public HomeController(IManifestService manifestService) {
         this.manifestService = manifestService;
     }
 
     @ApiOperation(value = "Hello World", notes = "Hello World notes", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful response") })
-    @RequestMapping(value = "/{itemId}/manifest", method = RequestMethod.GET)
-    public Manifest getManifest(@PathVariable String itemId) throws ExecutionException, InterruptedException {
-        return manifestService.getManifest(itemId);
+    @RequestMapping(value = "{itemId}/manifest", method = RequestMethod.GET)
+    public Manifest getManifest(@PathVariable String itemId, HttpServletRequest request) {
+        String idUri = request.getScheme() + "://" + request.getLocalName() + ":" +  request.getLocalPort() + request.getRequestURI();
+        return manifestService.getManifest(itemId, idUri);
     }
 
     @ExceptionHandler(Exception.class)
@@ -47,7 +53,7 @@ public class HomeController {
             headers.append(headerKey + ": " + headerValue + ", ");
         }
 
-        logger.error("" +
+        LOGGER.error("" +
                 "Got an unexcepted exception.\n" +
                 "Context Path: " + req.getContextPath() + "\n" +
                 "Request URI: " + req.getRequestURI() + "\n" +

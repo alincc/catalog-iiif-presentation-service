@@ -1,39 +1,39 @@
 package no.nb.microservices.iiifpresentation.service;
 
-import no.nb.microservices.catalogitem.rest.model.ItemResource;
-import no.nb.microservices.catalogitem.rest.model.Metadata;
-import no.nb.microservices.catalogitem.rest.model.TitelInfo;
-import no.nb.microservices.iiifpresentation.Application;
-import no.nb.microservices.iiifpresentation.model.Manifest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import no.nb.microservices.catalogitem.rest.model.ItemResource;
+import no.nb.microservices.catalogitem.rest.model.Metadata;
+import no.nb.microservices.catalogitem.rest.model.TitelInfo;
+import no.nb.microservices.iiifpresentation.config.ApplicationSettings;
+import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
+import no.nb.microservices.iiifpresentation.model.Manifest;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /**
  * Created by andreasb on 15.06.15.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
 public class ManifestServiceTest {
 
     @Mock
     private ItemService itemService;
-
+    
+    @Mock
+    private ApplicationSettings applicationSettings;
+    
     @InjectMocks
     private ManifestService manifestService;
 
@@ -80,13 +80,57 @@ public class ManifestServiceTest {
 
         // Mocks
         when(itemService.getItemByIdAsync(id)).thenReturn(itemFuture);
+        when(applicationSettings.getContextUrl()).thenReturn("http://iiif.io/api/presentation/2/context.json");
 
         // Call
-        Manifest manifest = manifestService.getManifest(id);
+        Manifest manifest = manifestService.getManifest(id, "http://catalog-iiif-presentation-service.nb.no/iiif/" + id + "/manifest");
 
         // Asserts
         assertEquals("Donald Ducks great adventure", manifest.getLabel());
+        assertEquals("http://iiif.io/api/presentation/2/context.json", manifest.getContext());
+        assertEquals("sc:Manifest", manifest.getType());
+        assertEquals("http://catalog-iiif-presentation-service.nb.no/iiif/" + id + "/manifest", manifest.getId());
         verify(itemService, times(1)).getItemByIdAsync(id);
 
+    }
+    
+    @Test(expected=RetrieveItemException.class)
+    public void testGetManifestGetItemByAsyncInterruptedException() throws InterruptedException {
+        when(itemService.getItemByIdAsync("123")).thenThrow(InterruptedException.class);
+        manifestService.getManifest("123", "http://catalog-iiif-presentation-service.nb.no/iiif/123/manifest");
+        verify(itemService);
+    }
+    
+    @Test(expected=RetrieveItemException.class)
+    public void testGetManifestGetItemByAsyncExecutionException() throws InterruptedException, ExecutionException {
+        Future<ItemResource> itemFuture = new Future<ItemResource>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return false;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean isDone() {
+                return false;
+            }
+
+            @Override
+            public ItemResource get() throws InterruptedException, ExecutionException {
+                throw new ExecutionException(null);
+            }
+
+            @Override
+            public ItemResource get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                return null;
+            }
+        };
+        when(itemService.getItemByIdAsync("123")).thenReturn(itemFuture);
+        manifestService.getManifest("123", "http://catalog-iiif-presentation-service.nb.no/iiif/123/manifest");
+        verify(itemService);
     }
 }

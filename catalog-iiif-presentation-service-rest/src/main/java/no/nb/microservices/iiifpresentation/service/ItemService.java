@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 @Service
 public class ItemService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ItemService.class);
 
     private ItemRepository itemRepository;
 
@@ -29,12 +29,12 @@ public class ItemService {
     //@CacheResult TODO: This fails when uncommented
     @HystrixCommand(fallbackMethod = "getDefaultItem")
     public Future<ItemResource> getItemByIdAsync(String id) throws InterruptedException {
-        logger.info("Fetching item from catalog-item-service by id " + id);
+        LOGGER.info("Fetching item from catalog-item-service by id " + id);
         return new AsyncResult<ItemResource>(itemRepository.getById(id));
     }
 
     private ItemResource getDefaultItem(String id) {
-        logger.warn("Failed to get item from catalog-item-service. Returning default item with id " + id);
+        LOGGER.warn("Failed to get item from catalog-item-service. Returning default item with id " + id);
         ItemResource item = new ItemResource();
         return item;
     }

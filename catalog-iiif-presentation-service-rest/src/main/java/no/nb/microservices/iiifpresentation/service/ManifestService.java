@@ -1,47 +1,66 @@
 package no.nb.microservices.iiifpresentation.service;
 
-import no.nb.microservices.catalogitem.rest.model.ItemResource;
-import no.nb.microservices.iiifpresentation.model.LabelValue;
-import no.nb.microservices.iiifpresentation.model.Manifest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import no.nb.microservices.catalogitem.rest.model.ItemResource;
+import no.nb.microservices.iiifpresentation.config.ApplicationSettings;
+import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
+import no.nb.microservices.iiifpresentation.model.LabelValue;
+import no.nb.microservices.iiifpresentation.model.Manifest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 /**
  * Created by andreasb on 11.06.15.
  */
 @Service
-public class ManifestService {
+public class ManifestService implements IManifestService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ManifestService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManifestService.class);
 
     private final ItemService itemService;
 
+    private final ApplicationSettings applicationSettings;
+    
     @Autowired
-    public ManifestService(ItemService itemService) {
+    public ManifestService(ItemService itemService, ApplicationSettings applicationSettings) {
         this.itemService = itemService;
+        this.applicationSettings = applicationSettings;
     }
 
-    public Manifest getManifest(String id) throws InterruptedException, ExecutionException {
+    @Override
+    public Manifest getManifest(String id, String idUri) {
         Manifest manifest = new Manifest();
-        Future<ItemResource> itemFuture = itemService.getItemByIdAsync(id);
+        Future<ItemResource> itemFuture;
+        try {
+            itemFuture = itemService.getItemByIdAsync(id);
+        } catch (InterruptedException e) {
+            LOGGER.error("Error retrieving item '" + id + "'", e);
+            throw new RetrieveItemException(e.getMessage());
+        }
 
-        ItemResource item = itemFuture.get();
+        ItemResource item;
+        try {
+            item = itemFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error("Error retrieving item '" + id + "'", e);
+            throw new RetrieveItemException(e.getMessage());
+        }
 
         // Context
-        manifest.setContext("");
+        manifest.setContext(applicationSettings.getContextUrl());
 
         // Type
-        manifest.setType("");
+        manifest.setType("sc:Manifest");
 
         // ID
-        manifest.setId("");
+        manifest.setId(idUri);
 
         // Label
         manifest.setLabel((item.getMetadata() != null && item.getMetadata().getTitleInfo() != null) ? item.getMetadata().getTitleInfo().getTitle() : "Untitled");

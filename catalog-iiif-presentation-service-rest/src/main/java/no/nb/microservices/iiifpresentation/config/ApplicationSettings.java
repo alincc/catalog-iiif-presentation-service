@@ -7,4 +7,13 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "microservice")
 public class ApplicationSettings {
 
+    private String contextUrl;
+
+    public void setContextUrl(String contextUrl) {
+        this.contextUrl = contextUrl;
+    }
+    
+    public String getContextUrl() {
+        return this.contextUrl;
+    }
 }
