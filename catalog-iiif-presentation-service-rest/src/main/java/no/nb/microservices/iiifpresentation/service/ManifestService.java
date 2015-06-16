@@ -38,15 +38,10 @@ public class ManifestService implements IManifestService {
     public Manifest getManifest(String id, String idUri) {
         Manifest manifest = new Manifest();
         Future<ItemResource> itemFuture;
+        ItemResource item;
+        
         try {
             itemFuture = itemService.getItemByIdAsync(id);
-        } catch (InterruptedException e) {
-            LOGGER.error("Error retrieving item '" + id + "'", e);
-            throw new RetrieveItemException(e.getMessage());
-        }
-
-        ItemResource item;
-        try {
             item = itemFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             LOGGER.error("Error retrieving item '" + id + "'", e);
