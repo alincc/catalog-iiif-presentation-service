@@ -1,57 +1,37 @@
 package no.nb.microservices.iiifpresentation.rest.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import no.nb.microservices.iiifpresentation.Application;
 import no.nb.microservices.iiifpresentation.model.Manifest;
-import no.nb.microservices.iiifpresentation.service.ManifestService;
-import org.junit.Before;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
+@WebIntegrationTest("server.port: 0")
 public class HomeControllerTest {
 
-    @Mock
-    private ManifestService manifestService;
-
-    @InjectMocks
-    private HomeController homeController;
-
-    private MockMvc mockMvc;
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(homeController).build();
-    }
-
+    @Value("${local.server.port}")
+    int port;
+    
+    RestTemplate restTemplate = new TestRestTemplate();
+    
     @Test
-    public void getManifestTest() throws Exception{
-        // Setup
-        Manifest manifest = new Manifest();
-        manifest.setId("78234");
-
-        // Mocks
-        when(manifestService.getManifest("78234")).thenReturn(manifest);
-
-        // Calls and Asserts
-        mockMvc.perform(get("/78234/manifest"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.@id").value(manifest.getId()));
+    public void testGetManifest() {
+        final String identifier = "78234";
+        final String id = "http://localhost:" + port + "/iiif/" + identifier + "/manifest";
+        ResponseEntity<Manifest> result = restTemplate.getForEntity(id, Manifest.class);
+        
+        assertTrue("Status code should be 2xx", result.getStatusCode().is2xxSuccessful());
+        assertEquals(id, result.getBody().getId());
     }
-
 }
