@@ -24,12 +24,12 @@ public class ManifestService implements IManifestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManifestService.class);
 
-    private final ItemService itemService;
+    private final IItemService itemService;
 
     private final ApplicationSettings applicationSettings;
     
     @Autowired
-    public ManifestService(ItemService itemService, ApplicationSettings applicationSettings) {
+    public ManifestService(IItemService itemService, ApplicationSettings applicationSettings) {
         this.itemService = itemService;
         this.applicationSettings = applicationSettings;
     }
@@ -92,8 +92,8 @@ public class ManifestService implements IManifestService {
     private List<LabelValue> buildMetadataList(ItemResource item) {
         List<LabelValue> metadataList = new ArrayList<>();
 
-        //metadataList.add(new LabelValue("Publisher", (item.getMetadata().getPublisher());
-
+        if(item.getMetadata() != null) {
+        }
         return metadataList;
     }
 }

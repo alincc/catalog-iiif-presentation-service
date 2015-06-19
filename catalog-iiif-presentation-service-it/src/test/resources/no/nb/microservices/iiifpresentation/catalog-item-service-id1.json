@@ -1,0 +1,14 @@
+{  
+   "_links": {
+        "self": {
+           "href": "http://catalog-item-service/id1"
+        }
+    },
+   "metadata":{  
+      "titleInfo":  
+         {  
+            "title":"Title ID1"
+         }
+   },
+   "id": "id1"
+}

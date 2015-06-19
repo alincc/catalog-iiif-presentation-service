@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -39,8 +40,7 @@ public class HomeController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful response") })
     @RequestMapping(value = "{itemId}/manifest", method = RequestMethod.GET)
     public Manifest getManifest(@PathVariable String itemId, HttpServletRequest request) {
-        String idUri = request.getScheme() + "://" + request.getLocalName() + request.getRequestURI();
-        return manifestService.getManifest(itemId, idUri);
+        return manifestService.getManifest(itemId, ServletUriComponentsBuilder.fromRequest(request).build().toString());
     }
 
     @ExceptionHandler(Exception.class)

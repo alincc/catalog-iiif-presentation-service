@@ -14,6 +14,7 @@ server:
 
 microservice:
   contextUrl: http://iiif.io/api/presentation/2/context.json
+  
 ---
 spring:
     profiles: docker

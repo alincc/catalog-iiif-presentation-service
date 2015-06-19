@@ -1,5 +1,8 @@
 package no.nb.microservices.iiifpresentation.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by andreasb on 11.06.15.
  */
@@ -7,7 +10,8 @@ public class LabelValue {
     private String label;
     private Object value;
 
-    public LabelValue(String label, Object value) {
+    @JsonCreator
+    public LabelValue(@JsonProperty("label") String label, @JsonProperty("value") Object value) {
         this.label = label;
         this.value = value;
     }
