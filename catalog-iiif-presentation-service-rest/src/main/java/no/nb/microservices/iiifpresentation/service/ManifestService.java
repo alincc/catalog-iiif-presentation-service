@@ -104,7 +104,7 @@ public class ManifestService implements IManifestService {
     
     private void addPeopleToMetadataList(Metadata metadata, List<LabelValue> metadataList) {
         List<Person> people = metadata.getPeople();
-        if(people != null) {
+        if(people == null) {
             return;
         }
         for(Person person : people) {
