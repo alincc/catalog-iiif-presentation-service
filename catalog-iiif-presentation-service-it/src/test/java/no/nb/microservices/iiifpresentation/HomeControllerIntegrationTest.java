@@ -90,6 +90,8 @@ public class HomeControllerIntegrationTest {
             .andExpect(jsonPath("$.@type").value("sc:Manifest"))
             .andExpect(jsonPath("$.@context").value("http://iiif.io/api/presentation/2/context.json"))
             .andExpect(jsonPath("$.label").value("Title ID1"))
+            .andExpect(jsonPath("$.metadata[*].label").value("Creator"))
+            .andExpect(jsonPath("$.metadata[*].value").value("Person 1"))
             .andReturn();
     }
     

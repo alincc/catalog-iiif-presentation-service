@@ -12,7 +12,7 @@ import java.util.concurrent.TimeoutException;
 
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.catalogitem.rest.model.Metadata;
-import no.nb.microservices.catalogitem.rest.model.TitelInfo;
+import no.nb.microservices.catalogitem.rest.model.TitleInfo;
 import no.nb.microservices.iiifpresentation.config.ApplicationSettings;
 import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
 import no.nb.microservices.iiifpresentation.model.Manifest;
@@ -66,7 +66,7 @@ public class ManifestServiceTest {
             public ItemResource get() throws InterruptedException, ExecutionException {
                 ItemResource item = new ItemResource();
                 item.setMetadata(new Metadata());
-                TitelInfo titleInfo = new TitelInfo();
+                TitleInfo titleInfo = new TitleInfo();
                 titleInfo.setTitle("Donald Ducks great adventure");
                 item.getMetadata().setTitleInfo(titleInfo);
                 return item;

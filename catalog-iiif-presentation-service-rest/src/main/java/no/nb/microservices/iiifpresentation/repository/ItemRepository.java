@@ -1,6 +1,7 @@
 package no.nb.microservices.iiifpresentation.repository;
 
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
+
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

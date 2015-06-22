@@ -6,6 +6,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
+import no.nb.microservices.catalogitem.rest.model.Metadata;
+import no.nb.microservices.catalogitem.rest.model.Person;
+import no.nb.microservices.catalogitem.rest.model.Role;
 import no.nb.microservices.iiifpresentation.config.ApplicationSettings;
 import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
 import no.nb.microservices.iiifpresentation.model.LabelValue;
@@ -92,8 +95,25 @@ public class ManifestService implements IManifestService {
     private List<LabelValue> buildMetadataList(ItemResource item) {
         List<LabelValue> metadataList = new ArrayList<>();
 
-        if(item.getMetadata() != null) {
+        Metadata metadata = item.getMetadata();
+        if(metadata != null) {
+            addPeopleToMetadataList(metadata, metadataList);
         }
         return metadataList;
+    }
+    
+    private void addPeopleToMetadataList(Metadata metadata, List<LabelValue> metadataList) {
+        List<Person> people = metadata.getPeople();
+        if(people != null) {
+            return;
+        }
+        for(Person person : people) {
+            List<Role> roles = person.getRoles();
+            if(roles != null) {
+                for(Role role : person.getRoles()) {
+                    metadataList.add(new LabelValue(role.getName(), person.getName()));
+                }
+            }
+        }
     }
 }

@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>no.nb.microservices.catalogitem</groupId>
 			<artifactId>catalog-item-service-model</artifactId>
-			<version>0.0.1-3e704909661ea10ca578482c082a281d433230e6-7</version>
+            <version>0.0.1-21408c204c7b57dd1170ac4ce6774194fca7f1ec-38</version>
 		</dependency>
 
 		<!-- Testing -->

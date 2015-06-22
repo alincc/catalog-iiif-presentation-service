@@ -1,7 +1,6 @@
 package no.nb.microservices.iiifpresentation.service;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
+import java.util.concurrent.Future;
 
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.iiifpresentation.repository.ItemRepository;
@@ -11,7 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.Future;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
 
 /**
  * Created by andreasb on 15.06.15.
