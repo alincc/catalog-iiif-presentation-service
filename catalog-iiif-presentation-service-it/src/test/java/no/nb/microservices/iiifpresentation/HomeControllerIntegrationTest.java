@@ -84,22 +84,25 @@ public class HomeControllerIntegrationTest {
     
     @Test
     public void testGetManifestFromItemService() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/iiif/id1/manifest"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/id1/manifest"))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/iiif/id1/manifest"))
+            .andExpect(jsonPath("$.@id").value("http://localhost/id1/manifest"))
             .andExpect(jsonPath("$.@type").value("sc:Manifest"))
             .andExpect(jsonPath("$.@context").value("http://iiif.io/api/presentation/2/context.json"))
             .andExpect(jsonPath("$.label").value("Title ID1"))
-            .andExpect(jsonPath("$.metadata[*].label").value("Creator"))
-            .andExpect(jsonPath("$.metadata[*].value").value("Person 1"))
+            .andExpect(jsonPath("$.metadata[0].label").value("Author"))
+            .andExpect(jsonPath("$.metadata[0].value").value("Person 1"))
+//            .andExpect(jsonPath("$.metadata[1].label").value("Publisher"))
+//            .andExpect(jsonPath("$.metadata[1].value").value("Publisher 1"))
+            
             .andReturn();
     }
     
     @Test
     public void testGetManifestFromFallBackMethod() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/iiif/id2/manifest"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/id2/manifest"))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/iiif/id2/manifest"))
+            .andExpect(jsonPath("$.@id").value("http://localhost/id2/manifest"))
             .andExpect(jsonPath("$.@type").value("sc:Manifest"))
             .andExpect(jsonPath("$.@context").value("http://iiif.io/api/presentation/2/context.json"))
             .andExpect(jsonPath("$.label").value("Untitled"))

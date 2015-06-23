@@ -106,7 +106,7 @@ public class ManifestServiceTest {
         assertEquals("http://iiif.io/api/presentation/2/context.json", manifest.getContext());
         assertEquals("sc:Manifest", manifest.getType());
         assertEquals("http://catalog-iiif-presentation-service.nb.no/iiif/" + id + "/manifest", manifest.getId());
-        assertEquals("Creator", manifest.getMetadata().get(0).getLabel());
+        assertEquals("Author", manifest.getMetadata().get(0).getLabel());
         assertEquals("Person 1", manifest.getMetadata().get(0).getValue());
         verify(itemService, times(1)).getItemByIdAsync(id);
 

@@ -97,23 +97,34 @@ public class ManifestService implements IManifestService {
 
         Metadata metadata = item.getMetadata();
         if(metadata != null) {
-            addPeopleToMetadataList(metadata, metadataList);
+            addAuthorToMetadataList(metadata, metadataList);
         }
         return metadataList;
     }
     
-    private void addPeopleToMetadataList(Metadata metadata, List<LabelValue> metadataList) {
+    private void addAuthorToMetadataList(Metadata metadata, List<LabelValue> metadataList) {
         List<Person> people = metadata.getPeople();
         if(people == null) {
             return;
         }
         for(Person person : people) {
-            List<Role> roles = person.getRoles();
-            if(roles != null) {
-                for(Role role : person.getRoles()) {
-                    metadataList.add(new LabelValue(role.getName(), person.getName()));
-                }
+            if(isAuthor(person)) {
+                metadataList.add(new LabelValue("Author", person.getName()));
             }
         }
+    }
+    
+    private boolean isAuthor(Person person) {
+        List<Role> roles = person.getRoles();
+        if(roles == null) {
+            return false;
+        }
+        
+        for(Role role : person.getRoles()) {
+            if("Creator".equalsIgnoreCase(role.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
