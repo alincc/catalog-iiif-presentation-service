@@ -6,6 +6,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
+import no.nb.microservices.catalogitem.rest.model.Metadata;
+import no.nb.microservices.catalogitem.rest.model.Person;
+import no.nb.microservices.catalogitem.rest.model.Role;
 import no.nb.microservices.iiifpresentation.config.ApplicationSettings;
 import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
 import no.nb.microservices.iiifpresentation.model.LabelValue;
@@ -24,12 +27,12 @@ public class ManifestService implements IManifestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManifestService.class);
 
-    private final ItemService itemService;
+    private final IItemService itemService;
 
     private final ApplicationSettings applicationSettings;
     
     @Autowired
-    public ManifestService(ItemService itemService, ApplicationSettings applicationSettings) {
+    public ManifestService(IItemService itemService, ApplicationSettings applicationSettings) {
         this.itemService = itemService;
         this.applicationSettings = applicationSettings;
     }
@@ -92,8 +95,36 @@ public class ManifestService implements IManifestService {
     private List<LabelValue> buildMetadataList(ItemResource item) {
         List<LabelValue> metadataList = new ArrayList<>();
 
-        //metadataList.add(new LabelValue("Publisher", (item.getMetadata().getPublisher());
-
+        Metadata metadata = item.getMetadata();
+        if(metadata != null) {
+            addAuthorToMetadataList(metadata, metadataList);
+        }
         return metadataList;
+    }
+    
+    private void addAuthorToMetadataList(Metadata metadata, List<LabelValue> metadataList) {
+        List<Person> people = metadata.getPeople();
+        if(people == null) {
+            return;
+        }
+        for(Person person : people) {
+            if(isAuthor(person)) {
+                metadataList.add(new LabelValue("Author", person.getName()));
+            }
+        }
+    }
+    
+    private boolean isAuthor(Person person) {
+        List<Role> roles = person.getRoles();
+        if(roles == null) {
+            return false;
+        }
+        
+        for(Role role : person.getRoles()) {
+            if("Creator".equalsIgnoreCase(role.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

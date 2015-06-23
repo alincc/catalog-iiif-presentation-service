@@ -1,0 +1,31 @@
+{  
+    "_links": {
+        "self": {
+           "href": "http://catalog-item-service/id1"
+        }
+    },
+    "metadata":{  
+        "titleInfo": {  
+            "title":"Title ID1"
+        },
+        "people": [
+            {
+                "name": "Person 1",
+                "date": "1970-",
+                "roles": [{"name": "Creator"}]
+            },
+            {
+                "name": "Person 2",
+                "date": "1970-",
+                "roles": null
+            }
+        ]
+    },
+    "accessInfo": {
+        "accessAllowedFrom": "EVERYWHERE",
+        "viewability": "ALL",
+        "isDigital": true,
+        "isPublicDomain": true
+    },
+    "id": "id1"
+}
