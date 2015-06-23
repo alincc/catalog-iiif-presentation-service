@@ -23,7 +23,7 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping("/iiif")
+@RequestMapping("/")
 @Api(value = "/iiif", description = "Home api")
 public class HomeController {
 

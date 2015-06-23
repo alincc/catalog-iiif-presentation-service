@@ -40,7 +40,7 @@ public class HomeControllerTest {
     @Test
     public void testGetManifest() throws Exception {
         Manifest manifest = new Manifest();
-        manifest.setId("http://localhost/iiif/12345/manifest");
+        manifest.setId("http://localhost/12345/manifest");
         manifest.setLabel("Title");
         manifest.setContext("http://iiif.io/api/presentation/2/context.json");
         manifest.setType("sc:Manifest");
@@ -48,11 +48,11 @@ public class HomeControllerTest {
         metadata.add(new LabelValue("Publisher", "JUNIT TEST"));
         manifest.setMetadata(metadata);
         
-        when(manifestService.getManifest("12345", "http://localhost/iiif/12345/manifest")).thenReturn(manifest);
+        when(manifestService.getManifest("12345", "http://localhost/12345/manifest")).thenReturn(manifest);
         
-        mockMvc.perform(MockMvcRequestBuilders.get("/iiif/12345/manifest"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/12345/manifest"))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/iiif/12345/manifest"))
+            .andExpect(jsonPath("$.@id").value("http://localhost/12345/manifest"))
             .andExpect(jsonPath("$.@type").value("sc:Manifest"))
             .andExpect(jsonPath("$.@context").value("http://iiif.io/api/presentation/2/context.json"))
             .andExpect(jsonPath("$.label").value("Title"))
@@ -63,9 +63,9 @@ public class HomeControllerTest {
     
     @Test
     public void testDefaultHandler() throws Exception {
-        when(manifestService.getManifest("12345", "http://localhost/iiif/12345/manifest")).thenThrow(new RetrieveItemException("JUnit test exception"));
+        when(manifestService.getManifest("12345", "http://localhost/12345/manifest")).thenThrow(new RetrieveItemException("JUnit test exception"));
         
-        mockMvc.perform(MockMvcRequestBuilders.get("/iiif/12345/manifest"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/12345/manifest"))
             .andExpect(MockMvcResultMatchers.status().is5xxServerError());
     }
     
