@@ -3,7 +3,6 @@ package no.nb.microservices.iiifpresentation.rest.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import no.nb.htrace.annotation.Traceable;
-//import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.iiifpresentation.model.Manifest;
 import no.nb.microservices.iiifpresentation.service.IManifestService;
 
