@@ -2,6 +2,7 @@ package no.nb.microservices.iiifpresentation.rest.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.iiifpresentation.model.Manifest;
 import no.nb.microservices.iiifpresentation.service.IManifestService;
 
@@ -37,6 +38,7 @@ public class HomeController {
 
     @ApiOperation(value = "Hello World", notes = "Hello World notes", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful response") })
+    @Traceable(description="manifest")
     @RequestMapping(value = "{itemId}/manifest", method = RequestMethod.GET)
     public Manifest getManifest(@PathVariable String itemId, HttpServletRequest request) {
         return manifestService.getManifest(itemId, ServletUriComponentsBuilder.fromRequest(request).build().toString());

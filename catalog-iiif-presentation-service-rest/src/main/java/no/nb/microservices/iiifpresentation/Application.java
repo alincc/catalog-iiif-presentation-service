@@ -6,22 +6,23 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.cloud.security.oauth2.resource.EnableOAuth2Resource;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import no.nb.htrace.annotation.EnableTracing;
+
 @SpringBootApplication
 @EnableConfigurationProperties
-@EnableEurekaClient
 @EnableFeignClients
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 @EnableCircuitBreaker
 @EnableOAuth2Resource
 @EnableAsync
 @RefreshScope
+@EnableTracing
 @EnableHypermediaSupport(type= {HypermediaType.HAL})
 public class Application {
 

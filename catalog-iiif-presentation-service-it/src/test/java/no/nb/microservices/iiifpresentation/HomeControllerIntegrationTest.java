@@ -62,7 +62,7 @@ public class HomeControllerIntegrationTest {
 
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
-                if (request.getPath().equals("/id1")){
+                if (request.getPath().equals("/catalog/items/id1")){
                     return new MockResponse().setBody(itemId1Mock).setHeader("Content-Type", "application/hal+json; charset=utf-8");
                 }
                 return new MockResponse().setResponseCode(404);
