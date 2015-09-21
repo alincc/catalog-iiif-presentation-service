@@ -1,4 +1,4 @@
-package no.nb.microservices.iiifpresentation.service;
+package no.nb.microservices.iiifpresentation.core.item;
 
 import java.util.concurrent.Future;
 

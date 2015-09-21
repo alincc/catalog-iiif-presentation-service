@@ -4,7 +4,8 @@
            "href": "http://catalog-item-service/id1"
         }
     },
-    "metadata":{  
+    "metadata":{
+        "compositeTitle": "Title ID1",
         "titleInfo": {  
             "title":"Title ID1"
         },

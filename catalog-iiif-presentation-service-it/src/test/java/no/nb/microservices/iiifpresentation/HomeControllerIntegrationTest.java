@@ -1,5 +1,6 @@
 package no.nb.microservices.iiifpresentation;
 
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -32,6 +34,8 @@ import com.squareup.okhttp.mockwebserver.Dispatcher;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
+
+import no.nb.microservices.iiifpresentation.model.Manifest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {Application.class, RibbonClientConfiguration.class})
@@ -62,7 +66,8 @@ public class HomeControllerIntegrationTest {
 
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
-                if (request.getPath().equals("/catalog/items/id1")){
+                System.out.println(request.getPath());
+                if (request.getPath().equals("/catalog/items/id1")) {
                     return new MockResponse().setBody(itemId1Mock).setHeader("Content-Type", "application/hal+json; charset=utf-8");
                 }
                 return new MockResponse().setResponseCode(404);
@@ -83,30 +88,23 @@ public class HomeControllerIntegrationTest {
     }
     
     @Test
-    public void testGetManifestFromItemService() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/id1/manifest"))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/id1/manifest"))
-            .andExpect(jsonPath("$.@type").value("sc:Manifest"))
-            .andExpect(jsonPath("$.@context").value("http://iiif.io/api/presentation/2/context.json"))
-            .andExpect(jsonPath("$.label").value("Title ID1"))
-            .andExpect(jsonPath("$.metadata[0].label").value("Author"))
-            .andExpect(jsonPath("$.metadata[0].value").value("Person 1"))
-//            .andExpect(jsonPath("$.metadata[1].label").value("Publisher"))
-//            .andExpect(jsonPath("$.metadata[1].value").value("Publisher 1"))
-            
-            .andReturn();
+    public void testGetManifest() throws Exception {
+        
+        ResponseEntity<Manifest> response = template.getForEntity("http://localhost:" + port + "/catalog/iiif/id1/manifest", Manifest.class);
+        Manifest manifest = response.getBody();
+        
+        assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
+        assertEquals("Manifest label should be", "Title ID1", manifest.getLabel());
+        assertNotNull(manifest);
     }
     
     @Test
     public void testGetManifestFromFallBackMethod() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/id2/manifest"))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/id2/manifest"))
-            .andExpect(jsonPath("$.@type").value("sc:Manifest"))
-            .andExpect(jsonPath("$.@context").value("http://iiif.io/api/presentation/2/context.json"))
-            .andExpect(jsonPath("$.label").value("Untitled"))
-            .andReturn();
+        ResponseEntity<Manifest> response = template.getForEntity("http://localhost:" + port + "/catalog/iiif/id2/manifest", Manifest.class);
+
+        Manifest manifest = response.getBody();
+        assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
+        assertEquals("Manifest label should be \"Untitled\"", "Untitled", manifest.getLabel());
     }
 }
 
