@@ -12,8 +12,12 @@ endpoints:
 server:
   port: 8050
 
-microservice:
-  contextUrl: http://iiif.io/api/presentation/2/context.json
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
 
 zipkin:
     collector-hostname: localhost
@@ -23,14 +27,9 @@ spring:
     profiles: docker
 
 eureka:
-  instance:
-    preferIpAddress: true
   client:
     serviceUrl:
       defaultZone: http://discovery:8761/eureka/
       
-microservice:
-  contextUrl: http://iiif.io/api/presentation/2/context.json
-  
 zipkin:
     collector-hostname: zipkinCollector

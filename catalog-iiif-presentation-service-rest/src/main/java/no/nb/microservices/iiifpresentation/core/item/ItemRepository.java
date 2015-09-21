@@ -1,4 +1,4 @@
-package no.nb.microservices.iiifpresentation.repository;
+package no.nb.microservices.iiifpresentation.core.item;
 
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
 

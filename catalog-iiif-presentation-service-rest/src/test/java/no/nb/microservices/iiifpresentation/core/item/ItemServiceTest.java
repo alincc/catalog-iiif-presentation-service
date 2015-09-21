@@ -1,4 +1,4 @@
-package no.nb.microservices.iiifpresentation.service;
+package no.nb.microservices.iiifpresentation.core.item;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,7 +15,8 @@ import no.nb.microservices.catalogitem.rest.model.Metadata;
 import no.nb.microservices.catalogitem.rest.model.Person;
 import no.nb.microservices.catalogitem.rest.model.Role;
 import no.nb.microservices.catalogitem.rest.model.TitleInfo;
-import no.nb.microservices.iiifpresentation.repository.ItemRepository;
+import no.nb.microservices.iiifpresentation.core.item.ItemRepository;
+import no.nb.microservices.iiifpresentation.core.item.ItemService;
 
 import org.junit.Before;
 import org.junit.Test;

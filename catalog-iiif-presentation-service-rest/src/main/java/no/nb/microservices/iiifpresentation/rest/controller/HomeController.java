@@ -2,47 +2,55 @@ package no.nb.microservices.iiifpresentation.rest.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import no.nb.htrace.annotation.Traceable;
-import no.nb.microservices.iiifpresentation.model.Manifest;
-import no.nb.microservices.iiifpresentation.service.IManifestService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
+import no.nb.htrace.annotation.Traceable;
+import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
+import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
+import no.nb.microservices.iiifpresentation.model.Manifest;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.ManifestBuilder;
+
 @RestController
-@RequestMapping("/")
+@RequestMapping("/catalog/iiif")
 @Api(value = "/iiif", description = "Home api")
 public class HomeController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
-    private final IManifestService manifestService;
+    private final ManifestService manifestService;
 
     @Autowired
-    public HomeController(IManifestService manifestService) {
+    public HomeController(ManifestService manifestService) {
         this.manifestService = manifestService;
     }
 
     @ApiOperation(value = "Hello World", notes = "Hello World notes", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful response") })
     @Traceable(description="manifest")
-    @RequestMapping(value = "{itemId}/manifest", method = RequestMethod.GET)
-    public Manifest getManifest(@PathVariable String itemId, HttpServletRequest request) {
-        return manifestService.getManifest(itemId, ServletUriComponentsBuilder.fromRequest(request).build().toString());
+    @RequestMapping(value = "/{id}/manifest", method = RequestMethod.GET)
+    public ResponseEntity<Manifest> getManifest(@PathVariable String id) {
+        ItemStructPair itemStructPair = manifestService.getManifest(id);
+        Manifest manifest =  new ManifestBuilder(id)
+                .withItem(itemStructPair.getItem())
+                .struct(itemStructPair.getStruct())
+                .build();
+
+        return new ResponseEntity<>(manifest, HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)
