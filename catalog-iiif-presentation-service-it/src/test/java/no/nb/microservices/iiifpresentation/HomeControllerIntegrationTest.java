@@ -1,7 +1,8 @@
 package no.nb.microservices.iiifpresentation;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,8 +22,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
@@ -46,11 +45,6 @@ public class HomeControllerIntegrationTest {
     int port;
 
     @Autowired
-    private WebApplicationContext context;
-
-    private MockMvc mockMvc;
-    
-    @Autowired
     ILoadBalancer lb;
 
     RestTemplate template = new TestRestTemplate();
@@ -59,14 +53,13 @@ public class HomeControllerIntegrationTest {
     
     @Before
     public void setup() throws Exception {
-        String itemId1Mock = IOUtils.toString(this.getClass().getResourceAsStream("catalog-item-service-id1.json"));
 
         server = new MockWebServer();
         final Dispatcher dispatcher = new Dispatcher() {
+            String itemId1Mock = IOUtils.toString(this.getClass().getResourceAsStream("catalog-item-service-id1.json"));
 
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
-                System.out.println(request.getPath());
                 if (request.getPath().equals("/catalog/items/id1")) {
                     return new MockResponse().setBody(itemId1Mock).setHeader("Content-Type", "application/hal+json; charset=utf-8");
                 }
@@ -78,8 +71,6 @@ public class HomeControllerIntegrationTest {
 
         BaseLoadBalancer blb = (BaseLoadBalancer) lb;
         blb.setServersList(Arrays.asList(new Server(server.getHostName(), server.getPort())));
-        
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
     @After
@@ -95,6 +86,7 @@ public class HomeControllerIntegrationTest {
         
         assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
         assertEquals("Manifest label should be", "Title ID1", manifest.getLabel());
+        assertEquals("manifest should have one sequence", 1, manifest.getSequences().size());
         assertNotNull(manifest);
     }
     

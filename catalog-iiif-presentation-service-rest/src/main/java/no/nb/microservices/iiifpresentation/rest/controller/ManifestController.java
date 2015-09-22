@@ -22,19 +22,21 @@ import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import no.nb.microservices.iiifpresentation.model.Manifest;
+import no.nb.microservices.iiifpresentation.model.Sequence;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.ManifestBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.SequenceBuilder;
 
 @RestController
 @RequestMapping("/catalog/iiif")
 @Api(value = "/iiif", description = "Home api")
-public class HomeController {
+public class ManifestController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManifestController.class);
 
     private final ManifestService manifestService;
 
     @Autowired
-    public HomeController(ManifestService manifestService) {
+    public ManifestController(ManifestService manifestService) {
         this.manifestService = manifestService;
     }
 
@@ -44,14 +46,27 @@ public class HomeController {
     @RequestMapping(value = "/{id}/manifest", method = RequestMethod.GET)
     public ResponseEntity<Manifest> getManifest(@PathVariable String id) {
         ItemStructPair itemStructPair = manifestService.getManifest(id);
-        Manifest manifest =  new ManifestBuilder(id)
+        Manifest manifest = new ManifestBuilder(id)
                 .withItem(itemStructPair.getItem())
-                .struct(itemStructPair.getStruct())
+                .withStruct(itemStructPair.getStruct())
                 .build();
 
         return new ResponseEntity<>(manifest, HttpStatus.OK);
     }
 
+    @Traceable(description="sequence")
+    @RequestMapping(value = "/{id}/sequence/normal", method = RequestMethod.GET)
+    public ResponseEntity<Sequence> getSequence(@PathVariable String id) {
+        ItemStructPair itemStructPair = manifestService.getManifest(id);
+        
+        Sequence sequence = new SequenceBuilder()
+                .withId(id)
+                .withStruct(itemStructPair.getStruct())
+                .build();
+
+        return new ResponseEntity<>(sequence, HttpStatus.OK);
+    }
+    
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "It looks like we have a internal error in our application. The error have been logged and will be looked at by our development team")
     public void defaultHandler(HttpServletRequest req, Exception e) {
