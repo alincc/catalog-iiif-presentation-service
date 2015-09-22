@@ -4,6 +4,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.hateoas.Link;
@@ -15,7 +16,8 @@ import no.nb.microservices.catalogitem.rest.model.Role;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
 import no.nb.microservices.iiifpresentation.model.LabelValue;
 import no.nb.microservices.iiifpresentation.model.Manifest;
-import no.nb.microservices.iiifpresentation.rest.controller.HomeController;
+import no.nb.microservices.iiifpresentation.model.Sequence;
+import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
 
 public class ManifestBuilder {
 
@@ -27,7 +29,7 @@ public class ManifestBuilder {
         this.id = id;
     }
     
-    public ManifestBuilder struct(StructMap struct) {
+    public ManifestBuilder withStruct(StructMap struct) {
         this.struct = struct;
         return this;
     }
@@ -42,7 +44,7 @@ public class ManifestBuilder {
         Manifest manifest = new Manifest();
         manifest.setContext("http://iiif.io/api/presentation/2/context.json");
         manifest.setType("sc:Manifest");
-        Link selfRel = linkTo(methodOn(HomeController.class).getManifest(id)).withSelfRel();
+        Link selfRel = linkTo(methodOn(ManifestController.class).getManifest(id)).withSelfRel();
         manifest.setId(selfRel.getHref());
         manifest.setLabel((item != null && item.getMetadata() != null && item.getMetadata().getCompositeTitle() != null) ? item.getMetadata().getCompositeTitle() : "Untitled");
         if (item != null) {
@@ -57,11 +59,13 @@ public class ManifestBuilder {
         manifest.setService(null);
         manifest.setSeeAlso(null);
         manifest.setWithin("");
-        // Sequences
-
-        // Structures
+        manifest.setSequences(Arrays.asList(createNormalSequence()));
 
         return manifest;
+    }
+
+    private Sequence createNormalSequence() {
+        return new SequenceBuilder().withId(id).withStruct(struct).build();
     }
     
     private List<LabelValue> buildMetadataList(ItemResource item) {
@@ -101,5 +105,5 @@ public class ManifestBuilder {
         }
         return false;
     }
-    
+
 }

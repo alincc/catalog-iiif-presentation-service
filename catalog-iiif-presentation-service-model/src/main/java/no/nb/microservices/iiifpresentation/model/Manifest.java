@@ -1,13 +1,12 @@
 package no.nb.microservices.iiifpresentation.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.List;
-
-/**
- * Created by andreasb on 11.06.15.
- */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "context", "type", "id", "label", "metadata", "description", "license", "attribution", "service", "seeAlso", "within" })
 public class Manifest {
     @JsonProperty("@context")
@@ -27,6 +26,7 @@ public class Manifest {
     private Service service;
     private SeeAlso seeAlso;
     private String within;
+    private List<Sequence> sequences;
 
     public String getContext() {
         return context;
@@ -115,4 +115,13 @@ public class Manifest {
     public void setWithin(String within) {
         this.within = within;
     }
+
+    public List<Sequence> getSequences() {
+        return sequences;
+    }
+
+    public void setSequences(List<Sequence> sequences) {
+        this.sequences = sequences;
+    }
+
 }

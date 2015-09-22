@@ -18,18 +18,18 @@ import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HomeControllerTest {
+public class ManifestControllerTest {
 
     @Mock
     private ManifestService manifestService;
     
-    private HomeController homeController;
+    private ManifestController homeController;
     
     private MockMvc mockMvc;
     
     @Before
     public void setup() {
-        homeController = new HomeController(manifestService);
+        homeController = new ManifestController(manifestService);
         mockMvc = MockMvcBuilders.standaloneSetup(homeController).build();
     }
     
