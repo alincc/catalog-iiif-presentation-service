@@ -1,120 +1,79 @@
 package no.nb.microservices.iiifpresentation.core.manifest;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import no.nb.commons.web.util.UserUtils;
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
-import no.nb.microservices.iiifpresentation.config.ApplicationSettings;
-import no.nb.microservices.iiifpresentation.core.item.ItemService;
+import no.nb.microservices.catalogmetadata.model.struct.StructMap;
+import no.nb.microservices.iiifpresentation.core.item.ItemRepository;
+import no.nb.microservices.iiifpresentation.core.metadata.repository.MetadataRepository;
 import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ManifestServiceImplTest {
 
     @Mock
-    private ItemService itemService;
+    private ItemRepository itemRepository;
     
     @Mock
-    private ApplicationSettings applicationSettings;
+    private MetadataRepository metadataRepository;
     
     @InjectMocks
     private ManifestServiceImpl manifestService;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        mockRequest();
     }
-
+    
+    @After
+    public void cleanUp() {
+        RequestContextHolder.resetRequestAttributes();
+    }
+    
     @Test
     public void getManifestTest() throws Exception {
         String id = "id1";
-        Future<ItemResource> itemFuture = new Future<ItemResource>() {
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                return false;
-            }
-
-            @Override
-            public boolean isCancelled() {
-                return false;
-            }
-
-            @Override
-            public boolean isDone() {
-                return false;
-            }
-
-            @Override
-            public ItemResource get() throws InterruptedException, ExecutionException {
-                return new ItemResource(id);
-            }
-
-            @Override
-            public ItemResource get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-                return null;
-            }
-        };
-        when(itemService.getItemByIdAsync(id)).thenReturn(itemFuture);
-
+        when(itemRepository.getById(eq(id), anyString(), anyString(), anyString(), anyString())).thenReturn(new ItemResource());
+        when(metadataRepository.getStructById(eq(id), anyString(), anyString(), anyString(), anyString())).thenReturn(new StructMap());
+        
         ItemStructPair itemAndStructPair = manifestService.getManifest(id);
 
-        // Asserts
         assertNotNull("Should have a item", itemAndStructPair.getItem());
-        verify(itemService, times(1)).getItemByIdAsync(id);
-
+        assertNotNull("Should have a struct", itemAndStructPair.getStruct());
     }
     
     @Test(expected=RetrieveItemException.class)
-    public void testGetManifestGetItemByAsyncInterruptedException() throws InterruptedException {
+    public void testExceptionhandling() throws InterruptedException {
         String id = "id1";
-        when(itemService.getItemByIdAsync(id)).thenThrow(InterruptedException.class);
+        when(itemRepository.getById(eq(id), anyString(), anyString(), anyString(), anyString())).thenReturn(new ItemResource());
+        when(metadataRepository.getStructById(eq(id), anyString(), anyString(), anyString(), anyString())).thenThrow(RuntimeException.class);
+        
         manifestService.getManifest(id);
-        verify(itemService);
     }
     
-    @Test(expected=RetrieveItemException.class)
-    public void testGetManifestGetItemByAsyncExecutionException() throws InterruptedException, ExecutionException {
-        String id = "id1";
-        Future<ItemResource> itemFuture = new Future<ItemResource>() {
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                return false;
-            }
-
-            @Override
-            public boolean isCancelled() {
-                return false;
-            }
-
-            @Override
-            public boolean isDone() {
-                return false;
-            }
-
-            @Override
-            public ItemResource get() throws InterruptedException, ExecutionException {
-                throw new ExecutionException(null);
-            }
-
-            @Override
-            public ItemResource get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-                return null;
-            }
-        };
-        when(itemService.getItemByIdAsync(id)).thenReturn(itemFuture);
-        manifestService.getManifest(id);
-        verify(itemService);
-    }
+    private void mockRequest() {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/iiif/id1/manifest");
+        String ip = "123.45.123.123";
+        request.addHeader(UserUtils.REAL_IP_HEADER, ip);
+        ServletRequestAttributes attributes = new ServletRequestAttributes(request);
+        RequestContextHolder.setRequestAttributes(attributes);
+        RequestContextHolder.setRequestAttributes(attributes);
+    }    
+    
+    
 }

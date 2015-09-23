@@ -14,6 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.catalogitem.rest.model.Metadata;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
+import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
 import no.nb.microservices.iiifpresentation.model.Manifest;
 
 public class ManifestBuilderTest {
@@ -37,7 +38,7 @@ public class ManifestBuilderTest {
         Metadata metadata = new Metadata();
         metadata.setSummary("A short summary");
         item.setMetadata(metadata);
-        StructMap struct = new StructMapFixtures().STRUCTMAP;
+        StructMap struct = TestStructMap.aDefaultStructMap().build();
 
         Manifest manifest = new ManifestBuilder(id).withItem(item).withStruct(struct).build();
 

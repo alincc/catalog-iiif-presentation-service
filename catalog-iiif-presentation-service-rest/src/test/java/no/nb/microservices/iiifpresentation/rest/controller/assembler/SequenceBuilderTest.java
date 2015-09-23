@@ -9,11 +9,11 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
 import no.nb.microservices.iiifpresentation.model.Sequence;
 
 public class SequenceBuilderTest {
 
-    
     @Before
     public void init() {
         createDefaultRequestAttributes();
@@ -29,7 +29,7 @@ public class SequenceBuilderTest {
     public void whenIdThenCreateContext() {
         Sequence sequence = new SequenceBuilder()
                 .withId("id1")
-                .withStruct(new StructMapFixtures().STRUCTMAP)
+                .withStruct(TestStructMap.aDefaultStructMap().build())
                 .build();
 
         assertNotNull("http://localhost/catalog/iiif/id1/sequence/normal", sequence.getId());
@@ -52,6 +52,13 @@ public class SequenceBuilderTest {
         Sequence sequence = new SequenceFixtures().SEQUENCE;
         
         assertEquals("Current Page Order", sequence.getLabel());
+    }
+
+    @Test
+    public void sequenceMustHaveACanvas() {
+        Sequence sequence = new SequenceFixtures().SEQUENCE;
+        
+        assertEquals(10, sequence.getCanvases().size());
     }
 
     private void createDefaultRequestAttributes() {

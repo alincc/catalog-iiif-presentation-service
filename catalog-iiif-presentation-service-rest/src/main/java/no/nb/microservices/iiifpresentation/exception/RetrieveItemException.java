@@ -11,4 +11,8 @@ public class RetrieveItemException extends RuntimeException {
     public RetrieveItemException(String message) {
         super(message);
     }
+    
+    public RetrieveItemException(String message, Exception ex) {
+        super(message, ex);
+    }
 }
