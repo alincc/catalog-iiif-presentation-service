@@ -81,11 +81,7 @@ public class ManifestController {
         
         Canvas canvas = new CanvasBuilder()
                 .withId(id)
-                .withPageUrn(div.getResource().getHref())
-                .withName(name)
-                .withLabel(div.getOrderLabel())
-                .withWidth(div.getResource().getWidth())
-                .withHeight(div.getResource().getHeight())
+                .withDiv(div)
                 .build();
 
         return new ResponseEntity<>(canvas, HttpStatus.OK);

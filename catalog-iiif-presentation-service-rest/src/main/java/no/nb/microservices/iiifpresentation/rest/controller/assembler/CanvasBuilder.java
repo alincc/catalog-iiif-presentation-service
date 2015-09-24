@@ -5,67 +5,40 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import org.springframework.hateoas.Link;
 
+import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.iiifpresentation.model.Canvas;
 import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
 
 public class CanvasBuilder {
 
     private String id;
-    private String name;
-    private String pageUrn;
-    private String label;
-    private int width;
-    private int height;
+    private Div div;
     
     public CanvasBuilder withId(String id) {
         this.id = id;
         return this;
     }
 
-    public CanvasBuilder withName(String name) {
-        this.name = name;
+    public CanvasBuilder withDiv(final Div div) {
+        this.div = div;
         return this;
     }
-
-    public CanvasBuilder withPageUrn(String pageUrn) {
-        this.pageUrn = pageUrn;
-        return this;
-    }
-
-    public CanvasBuilder withLabel(String label) {
-        this.label = label;
-        return this;
-    }
-
-    public CanvasBuilder withWidth(int width) {
-        this.width = width;
-        return this;
-    }
-
-    public CanvasBuilder withHeight(int height) {
-        this.height = height;
-        return this;
-    }
-
+    
     public Canvas build() {
         validate();
 
-        Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(id, name)).withSelfRel();
-        return new Canvas(selfRel.getHref(), label, width, height);
+        Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(id, div.getId())).withSelfRel();
+        return new Canvas(selfRel.getHref(), div.getType(), div.getResource().getWidth(), div.getResource().getHeight());
     }
 
     private void validate() {
         if (id == null || id.isEmpty()) {
             throw new IllegalStateException("Missing required id");
         }
-
-        if (name == null || name.isEmpty()) {
-            throw new IllegalStateException("Missing required name");
+        if (div == null) {
+            throw new IllegalStateException("Missing required div");
         }
 
-        if (label == null || label.isEmpty()) {
-            throw new IllegalStateException("Missing required label");
-        }
     }
 
 }

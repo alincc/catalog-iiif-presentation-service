@@ -38,11 +38,7 @@ public class SequenceBuilder {
         for(Div div : struct.getDivs()) {
             Canvas canvas = new CanvasBuilder()
                 .withId(id)
-                .withName(div.getOrderLabel())
-                .withPageUrn(div.getResource().getOriginalName())
-                .withLabel(div.getOrderLabel())
-                .withWidth(div.getResource().getWidth())
-                .withHeight(div.getResource().getHeight())
+                .withDiv(div)
                 .build();
             sequence.addCanvas(canvas);
         }

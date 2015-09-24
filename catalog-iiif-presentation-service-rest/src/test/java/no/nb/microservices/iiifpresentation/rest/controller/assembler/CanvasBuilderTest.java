@@ -25,9 +25,9 @@ public class CanvasBuilderTest {
 
     @Test
     public void canvasMustHaveId() {
-        Canvas canvas = new CanvasFixtures().CANVAS;
+        Canvas canvas = createDefaultCanvas();
         
-        assertEquals("http://localhost/catalog/iiif/id1/canvas/p1", canvas.getId());
+        assertEquals("http://localhost/catalog/iiif/id1/canvas/id1", canvas.getId());
     }
 
     @Test(expected=IllegalStateException.class)
@@ -44,21 +44,21 @@ public class CanvasBuilderTest {
 
     @Test
     public void canvasMustHaveLabel() {
-        Canvas canvas = new CanvasFixtures().CANVAS;
+        Canvas canvas = createDefaultCanvas();
         
-        assertEquals("label1", canvas.getLabel());
+        assertEquals("PAGE", canvas.getLabel());
     }
 
     @Test
     public void canvasMustHaveWidth() {
-        Canvas canvas = new CanvasFixtures().CANVAS;
+        Canvas canvas = createDefaultCanvas();
         
         assertEquals(1, canvas.getWidth());
     }
 
     @Test
     public void canvasMustHaveHeight() {
-        Canvas canvas = new CanvasFixtures().CANVAS;
+        Canvas canvas = createDefaultCanvas();
         
         assertEquals(2, canvas.getHeight());
     }
@@ -73,5 +73,8 @@ public class CanvasBuilderTest {
         RequestContextHolder.resetRequestAttributes();
     }
 
+    private Canvas createDefaultCanvas() {
+        return TestCanvas.aDefaultCanvas().build();
+    }
     
 }

@@ -77,6 +77,7 @@ public class ManifestControllerTest {
         StructMap structMap = createDefaultStructMap();
         Div div = new Div(id);
         div.setOrderLabel("p1");
+        div.setType("PAGE");
         Resource resource = new Resource();
         resource.setHref("URN:NBN:no-nb_digibok_2001010100001_123");
         div.setResource(resource);

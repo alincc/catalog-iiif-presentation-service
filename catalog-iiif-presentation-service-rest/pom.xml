@@ -19,6 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <start-class>no.nb.microservices.iiifpresentation.Application</start-class>
         <docker.image.prefix>nb</docker.image.prefix>
+        <catalog-metadata.version>0.0.1-97</catalog-metadata.version>
     </properties>
 
     <dependencies>
@@ -35,12 +36,12 @@
         <dependency>
             <groupId>no.nb.microservices</groupId>
             <artifactId>catalog-metadata-model</artifactId>
-            <version>0.0.1-96</version>
+            <version>${catalog-metadata.version}</version>
         </dependency>
         <dependency>
             <groupId>no.nb.microservices</groupId>
             <artifactId>catalog-metadata-test</artifactId>
-            <version>0.0.1-96</version>
+            <version>${catalog-metadata.version}</version>
         </dependency>
         <dependency>
             <groupId>no.nb.commons</groupId>
