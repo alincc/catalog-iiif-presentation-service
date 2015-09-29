@@ -13,15 +13,15 @@ import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
 
 public class SequenceBuilder {
 
-    private String id;
+    private String manifestId;
     private StructMap struct;
     
     public SequenceBuilder() {
         super();
     }
 
-    public SequenceBuilder withId(String id) {
-        this.id = id;
+    public SequenceBuilder withManifestId(String manifestId) {
+        this.manifestId = manifestId;
         return this;
     }
 
@@ -32,12 +32,12 @@ public class SequenceBuilder {
 
     public Sequence build() {
         validate();
-        Link selfRel = linkTo(methodOn(ManifestController.class).getSequence(id)).withSelfRel();
+        Link selfRel = linkTo(methodOn(ManifestController.class).getSequence(manifestId)).withSelfRel();
         Sequence sequence = new Sequence(selfRel.getHref());
         
         for(Div div : struct.getDivs()) {
             Canvas canvas = new CanvasBuilder()
-                .withId(id)
+                .withManifestId(manifestId)
                 .withDiv(div)
                 .build();
             sequence.addCanvas(canvas);
@@ -47,8 +47,8 @@ public class SequenceBuilder {
     }
 
     private void validate() {
-        if (id == null || id.isEmpty()) {
-            throw new IllegalStateException("Missing id");
+        if (manifestId == null || manifestId.isEmpty()) {
+            throw new IllegalStateException("Missing manifestId");
         }
         if (struct == null || struct.getDivs().isEmpty()) {
             throw new IllegalStateException("Missing struct");

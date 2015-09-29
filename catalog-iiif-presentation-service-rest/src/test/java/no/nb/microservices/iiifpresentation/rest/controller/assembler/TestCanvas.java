@@ -3,13 +3,13 @@ package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.catalogmetadata.model.struct.Resource;
 
-public class TestCanvas {
+public final class TestCanvas {
     
     public static CanvasBuilder aDefaultCanvas() {
         Div div = createDefaultDiv();
 
         return new CanvasBuilder()
-                .withId("id1")
+                .withManifestId("id1")
                 .withDiv(div);
     }
 

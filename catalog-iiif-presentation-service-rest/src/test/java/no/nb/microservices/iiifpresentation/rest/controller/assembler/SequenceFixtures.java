@@ -6,7 +6,7 @@ import no.nb.microservices.iiifpresentation.model.Sequence;
 public class SequenceFixtures {
 
     public final Sequence SEQUENCE = new SequenceBuilder()
-            .withId("id1")
+            .withManifestId("id1")
             .withStruct(TestStructMap.aDefaultStructMap().build()).build();
 
 }

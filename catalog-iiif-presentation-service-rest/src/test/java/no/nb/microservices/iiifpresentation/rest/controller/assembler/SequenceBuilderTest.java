@@ -28,7 +28,7 @@ public class SequenceBuilderTest {
     @Test
     public void whenIdThenCreateContext() {
         Sequence sequence = new SequenceBuilder()
-                .withId("id1")
+                .withManifestId("id1")
                 .withStruct(TestStructMap.aDefaultStructMap().build())
                 .build();
 

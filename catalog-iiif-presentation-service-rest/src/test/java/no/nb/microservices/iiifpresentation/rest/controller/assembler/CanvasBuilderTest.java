@@ -38,7 +38,7 @@ public class CanvasBuilderTest {
     @Test(expected=IllegalStateException.class)
     public void whenMissingLabelThenThrowException() {
         new CanvasBuilder()
-            .withId("id1")
+            .withManifestId("id1")
             .build();
     }
 
@@ -63,6 +63,13 @@ public class CanvasBuilderTest {
         assertEquals(2, canvas.getHeight());
     }
 
+    @Test
+    public void canvasMustHaveImages() {
+        Canvas canvas = createDefaultCanvas();
+        
+        assertNotNull(canvas.getImages());
+    }
+    
     private void createDefaultRequestAttributes() {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/iiif/id1/canvas/p1");
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);

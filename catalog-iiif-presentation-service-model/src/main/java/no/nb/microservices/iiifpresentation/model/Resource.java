@@ -1,42 +1,32 @@
 package no.nb.microservices.iiifpresentation.model;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"context", "id", "type", "label", "height", "width"})
-public class Canvas {
-    @JsonProperty("@context")
-    private String context;
-
+@JsonPropertyOrder({"context", "id", "type", "motivation", "on"})
+public class Resource {
     @JsonProperty("@id")
     private String id;
     @JsonProperty("@type")
     private String type;
-    private String label;
+    private String format;
     private int width;
     private int height;
-    private List<Annotation> images;
-
-    @JsonCreator
-    public Canvas() {
-        super();
-        this.type = "sc:Canvas";
-    }
     
-    public Canvas(String id, String label, int width, int height, List<Annotation> images) {
+    public Resource() {
+        super();
+        this.type = "dctypes:Image";
+        this.format = "image/jpeg";
+    }
+
+    public Resource(String id, int width,
+            int height) {
         this();
         this.id = id;
-        this.label = label;
         this.width = width;
         this.height = height;
-        this.images = images;
     }
 
     public String getId() {
@@ -47,8 +37,8 @@ public class Canvas {
         return type;
     }
 
-    public String getLabel() {
-        return label;
+    public String getFormat() {
+        return format;
     }
 
     public int getWidth() {
@@ -57,10 +47,6 @@ public class Canvas {
 
     public int getHeight() {
         return height;
-    }
-
-    public List<Annotation> getImages() {
-        return images;
     }
 
 }

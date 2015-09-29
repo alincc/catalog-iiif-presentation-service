@@ -21,11 +21,14 @@ import com.wordnik.swagger.annotations.ApiResponses;
 
 import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
+import no.nb.microservices.catalogmetadata.model.struct.Resource;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
+import no.nb.microservices.iiifpresentation.model.Annotation;
 import no.nb.microservices.iiifpresentation.model.Canvas;
 import no.nb.microservices.iiifpresentation.model.Manifest;
 import no.nb.microservices.iiifpresentation.model.Sequence;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.AnnotationBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.CanvasBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.ManifestBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.SequenceBuilder;
@@ -47,10 +50,10 @@ public class ManifestController {
     @ApiOperation(value = "Hello World", notes = "Hello World notes", response = String.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successful response") })
     @Traceable(description="manifest")
-    @RequestMapping(value = "/{id}/manifest", method = RequestMethod.GET)
-    public ResponseEntity<Manifest> getManifest(@PathVariable String id) {
-        ItemStructPair itemStructPair = manifestService.getManifest(id);
-        Manifest manifest = new ManifestBuilder(id)
+    @RequestMapping(value = "/{manifestId}/manifest", method = RequestMethod.GET)
+    public ResponseEntity<Manifest> getManifest(@PathVariable String manifestId) {
+        ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
+        Manifest manifest = new ManifestBuilder(manifestId)
                 .withItem(itemStructPair.getItem())
                 .withStruct(itemStructPair.getStruct())
                 .build();
@@ -59,12 +62,12 @@ public class ManifestController {
     }
 
     @Traceable(description="sequence")
-    @RequestMapping(value = "/{id}/sequence/normal", method = RequestMethod.GET)
-    public ResponseEntity<Sequence> getSequence(@PathVariable String id) {
-        ItemStructPair itemStructPair = manifestService.getManifest(id);
+    @RequestMapping(value = "/{manifestId}/sequence/normal", method = RequestMethod.GET)
+    public ResponseEntity<Sequence> getSequence(@PathVariable String manifestId) {
+        ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
         
         Sequence sequence = new SequenceBuilder()
-                .withId(id)
+                .withManifestId(manifestId)
                 .withStruct(itemStructPair.getStruct())
                 .build();
 
@@ -72,19 +75,36 @@ public class ManifestController {
     }
 
     @Traceable(description="canvas")
-    @RequestMapping(value = "/{id}/canvas/{name}", method = RequestMethod.GET)
-    public ResponseEntity<Canvas> getCanvas(@PathVariable String id,
+    @RequestMapping(value = "/{manifestId}/canvas/{name}", method = RequestMethod.GET)
+    public ResponseEntity<Canvas> getCanvas(@PathVariable String manifestId,
             @PathVariable String name) {
-        ItemStructPair itemStructPair = manifestService.getManifest(id);
+        ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
         
         Div div = itemStructPair.getStruct().getDivById(name);
         
         Canvas canvas = new CanvasBuilder()
-                .withId(id)
+                .withManifestId(manifestId)
                 .withDiv(div)
                 .build();
 
         return new ResponseEntity<>(canvas, HttpStatus.OK);
+    }
+
+    @Traceable(description="annotation")
+    @RequestMapping(value = "/{manifestId}/annotation/{name}", method = RequestMethod.GET)
+    public ResponseEntity<Annotation> getAnnotation(@PathVariable  String manifestId, 
+            @PathVariable  String name) {
+        ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
+
+        Div div = itemStructPair.getStruct().getDivByHref(name);
+
+        Annotation annotation = new AnnotationBuilder()
+                .withManifestId(manifestId)
+                .withCanvasId(div.getId())
+                .withResource(div.getResource())
+                .build();
+
+        return new ResponseEntity<>(annotation, HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)
@@ -102,4 +122,5 @@ public class ManifestController {
                 "Username: " + ((req.getUserPrincipal()  != null) ? req.getUserPrincipal().getName() : "Anonymous") + "\n"
                 , e);
     }
+
 }

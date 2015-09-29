@@ -65,7 +65,7 @@ public class ManifestBuilder {
     }
 
     private Sequence createNormalSequence() {
-        return new SequenceBuilder().withId(id).withStruct(struct).build();
+        return new SequenceBuilder().withManifestId(id).withStruct(struct).build();
     }
     
     private List<LabelValue> buildMetadataList(ItemResource item) {
