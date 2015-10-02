@@ -46,8 +46,8 @@ public class AnnotationBuilder {
     public Annotation build() {
         validate();
         
-        Link selfRel = linkTo(methodOn(ManifestController.class).getAnnotation(manifestId, resource.getHref())).withSelfRel();
-        Link canvasRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, canvasId)).withSelfRel();
+        Link selfRel = linkTo(methodOn(ManifestController.class).getAnnotation(manifestId, resource.getHref(), null)).withSelfRel();
+        Link canvasRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, canvasId, null)).withSelfRel();
         
         Resource iiifResource = new ResourceBuilder()
                 .withImageId(resource.getHref())

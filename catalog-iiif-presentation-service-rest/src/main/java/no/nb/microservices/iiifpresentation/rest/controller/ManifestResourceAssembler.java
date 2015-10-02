@@ -12,7 +12,7 @@ import no.nb.microservices.iiifpresentation.rest.controller.assembler.ManifestBu
 public class ManifestResourceAssembler {
 
     public Manifest toResource(ItemStructPair entity) {
-        Link selfRel = linkTo(methodOn(ManifestController.class).getManifest("id1")).withSelfRel();
+        Link selfRel = linkTo(methodOn(ManifestController.class).getManifest("id1", null)).withSelfRel();
         return new ManifestBuilder(selfRel.getHref())
                 .withItem(entity.getItem())
                 .withStruct(entity.getStruct())

@@ -43,7 +43,7 @@ public class CanvasBuilder {
     public Canvas build() {
         validate();
 
-        Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, div.getId())).withSelfRel();
+        Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, div.getId(), null)).withSelfRel();
         List<Annotation> images = createImages();
         
         return new Canvas(context, selfRel.getHref(), div.getType(), div.getResource().getWidth(), div.getResource().getHeight(), images);

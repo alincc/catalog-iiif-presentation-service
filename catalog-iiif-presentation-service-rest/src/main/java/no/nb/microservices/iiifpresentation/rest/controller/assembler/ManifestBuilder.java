@@ -14,20 +14,30 @@ import no.nb.microservices.catalogitem.rest.model.Metadata;
 import no.nb.microservices.catalogitem.rest.model.Person;
 import no.nb.microservices.catalogitem.rest.model.Role;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
-import no.nb.microservices.iiifpresentation.model.IiifPresentationContext;
+import no.nb.microservices.iiifpresentation.model.Context;
 import no.nb.microservices.iiifpresentation.model.LabelValue;
 import no.nb.microservices.iiifpresentation.model.Manifest;
+import no.nb.microservices.iiifpresentation.model.NullContext;
 import no.nb.microservices.iiifpresentation.model.Sequence;
 import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
 
 public class ManifestBuilder {
 
+    private Context context;
     private final String id;
     private StructMap struct;
     private ItemResource item;
     
     public ManifestBuilder(String id) {
+        super();
+        this.context = new NullContext();
         this.id = id;
+    }
+    
+    public ManifestBuilder withContext(
+            Context context) {
+        this.context = context;
+        return this;
     }
     
     public ManifestBuilder withStruct(StructMap struct) {
@@ -42,9 +52,9 @@ public class ManifestBuilder {
     
     public Manifest build() {
         
-        Manifest manifest = new Manifest(new IiifPresentationContext());
+        Manifest manifest = new Manifest(context);
         manifest.setType("sc:Manifest");
-        Link selfRel = linkTo(methodOn(ManifestController.class).getManifest(id)).withSelfRel();
+        Link selfRel = linkTo(methodOn(ManifestController.class).getManifest(id, null)).withSelfRel();
         manifest.setId(selfRel.getHref());
         manifest.setLabel((item != null && item.getMetadata() != null && item.getMetadata().getCompositeTitle() != null) ? item.getMetadata().getCompositeTitle() : "Untitled");
         if (item != null) {

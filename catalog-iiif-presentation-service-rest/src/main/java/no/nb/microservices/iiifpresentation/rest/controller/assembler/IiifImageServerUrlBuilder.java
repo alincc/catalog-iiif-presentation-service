@@ -2,7 +2,7 @@ package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
 public class IiifImageServerUrlBuilder {
 
-    public final static String IIIF_IMAGE_SERVER_TEMPLATE = "http://www.nb.no/services/iiif/api/{identifier}";
+    public final static String IIIF_IMAGE_SERVER_TEMPLATE = "http://www.nb.no/services/image/resolver/{identifier}";
     
     private String identifier;
     
