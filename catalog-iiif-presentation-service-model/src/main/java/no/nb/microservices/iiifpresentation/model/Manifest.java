@@ -13,13 +13,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Manifest {
     @JsonProperty("@context")
     private String context;
-
     @JsonProperty("@type")
     private String type;
-
     @JsonProperty("@id")
     private String id;
-
     private String label;
     private List<LabelValue> metadata;
     private String description;
@@ -30,12 +27,17 @@ public class Manifest {
     private String within;
     private List<Sequence> sequences;
 
+    public Manifest() {
+        super();
+    }
+    
+    public Manifest(Context context) {
+        this();
+        this.context = context.getContext();
+    }
+    
     public String getContext() {
         return context;
-    }
-
-    public void setContext(String context) {
-        this.context = context;
     }
 
     public String getType() {

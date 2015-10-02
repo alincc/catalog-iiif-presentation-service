@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Canvas {
     @JsonProperty("@context")
     private String context;
-
     @JsonProperty("@id")
     private String id;
     @JsonProperty("@type")
@@ -30,13 +29,18 @@ public class Canvas {
         this.type = "sc:Canvas";
     }
     
-    public Canvas(String id, String label, int width, int height, List<Annotation> images) {
+    public Canvas(Context context, String id, String label, int width, int height, List<Annotation> images) {
         this();
+        this.context = context.getContext();
         this.id = id;
         this.label = label;
         this.width = width;
         this.height = height;
         this.images = images;
+    }
+    
+    public String getContext() {
+        return context;
     }
 
     public String getId() {

@@ -21,11 +21,11 @@ import com.wordnik.swagger.annotations.ApiResponses;
 
 import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
-import no.nb.microservices.catalogmetadata.model.struct.Resource;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import no.nb.microservices.iiifpresentation.model.Annotation;
 import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.IiifPresentationContext;
 import no.nb.microservices.iiifpresentation.model.Manifest;
 import no.nb.microservices.iiifpresentation.model.Sequence;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.AnnotationBuilder;
@@ -67,6 +67,7 @@ public class ManifestController {
         ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
         
         Sequence sequence = new SequenceBuilder()
+                .withContext(new IiifPresentationContext())
                 .withManifestId(manifestId)
                 .withStruct(itemStructPair.getStruct())
                 .build();
@@ -83,6 +84,7 @@ public class ManifestController {
         Div div = itemStructPair.getStruct().getDivById(name);
         
         Canvas canvas = new CanvasBuilder()
+                .withContext(new IiifPresentationContext())
                 .withManifestId(manifestId)
                 .withDiv(div)
                 .build();
@@ -99,6 +101,7 @@ public class ManifestController {
         Div div = itemStructPair.getStruct().getDivByHref(name);
 
         Annotation annotation = new AnnotationBuilder()
+                .withContext(new IiifPresentationContext())
                 .withManifestId(manifestId)
                 .withCanvasId(div.getId())
                 .withResource(div.getResource())

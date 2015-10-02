@@ -11,12 +11,24 @@ import org.springframework.hateoas.Link;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.iiifpresentation.model.Annotation;
 import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.Context;
+import no.nb.microservices.iiifpresentation.model.NullContext;
 import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
 
 public class CanvasBuilder {
 
+    private Context context;
     private String manifestId;
     private Div div;
+    
+    public CanvasBuilder() {
+        context = new NullContext();
+    }
+    
+    public CanvasBuilder withContext(Context context) {
+        this.context = context;
+        return this;
+    }
     
     public CanvasBuilder withManifestId(String manifestId) {
         this.manifestId = manifestId;
@@ -34,7 +46,7 @@ public class CanvasBuilder {
         Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, div.getId())).withSelfRel();
         List<Annotation> images = createImages();
         
-        return new Canvas(selfRel.getHref(), div.getType(), div.getResource().getWidth(), div.getResource().getHeight(), images);
+        return new Canvas(context, selfRel.getHref(), div.getType(), div.getResource().getWidth(), div.getResource().getHeight(), images);
     }
 
     private void validate() {

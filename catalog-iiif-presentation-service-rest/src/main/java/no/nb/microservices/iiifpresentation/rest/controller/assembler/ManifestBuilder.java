@@ -14,6 +14,7 @@ import no.nb.microservices.catalogitem.rest.model.Metadata;
 import no.nb.microservices.catalogitem.rest.model.Person;
 import no.nb.microservices.catalogitem.rest.model.Role;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
+import no.nb.microservices.iiifpresentation.model.IiifPresentationContext;
 import no.nb.microservices.iiifpresentation.model.LabelValue;
 import no.nb.microservices.iiifpresentation.model.Manifest;
 import no.nb.microservices.iiifpresentation.model.Sequence;
@@ -41,8 +42,7 @@ public class ManifestBuilder {
     
     public Manifest build() {
         
-        Manifest manifest = new Manifest();
-        manifest.setContext("http://iiif.io/api/presentation/2/context.json");
+        Manifest manifest = new Manifest(new IiifPresentationContext());
         manifest.setType("sc:Manifest");
         Link selfRel = linkTo(methodOn(ManifestController.class).getManifest(id)).withSelfRel();
         manifest.setId(selfRel.getHref());

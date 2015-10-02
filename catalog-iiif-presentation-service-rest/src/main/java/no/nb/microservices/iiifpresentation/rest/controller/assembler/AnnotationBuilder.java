@@ -6,16 +6,28 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import org.springframework.hateoas.Link;
 
 import no.nb.microservices.iiifpresentation.model.Annotation;
-import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.Context;
+import no.nb.microservices.iiifpresentation.model.NullContext;
 import no.nb.microservices.iiifpresentation.model.Resource;
 import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
 
 public class AnnotationBuilder {
 
+    private Context context;
     private String manifestId;
     private String canvasId;
     private no.nb.microservices.catalogmetadata.model.struct.Resource resource; 
     
+    public AnnotationBuilder() {
+        super();
+        context = new NullContext();
+    }
+    
+    public AnnotationBuilder withContext(Context context) {
+        this.context = context;
+        return this;
+    }
+
     public AnnotationBuilder withManifestId(String manifestId) {
         this.manifestId = manifestId;
         return this;
@@ -42,7 +54,7 @@ public class AnnotationBuilder {
                 .withWidth(resource.getWidth())
                 .widthHeight(resource.getHeight())
                 .build();
-        return new Annotation(selfRel.getHref(), canvasRel.getHref(), iiifResource);
+        return new Annotation(context, selfRel.getHref(), canvasRel.getHref(), iiifResource);
     }
 
     private void validate() {

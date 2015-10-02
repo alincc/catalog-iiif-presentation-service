@@ -98,6 +98,7 @@ public class HomeControllerIntegrationTest {
         
         assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
         assertNotNull("Manifest should not be null", manifest);
+        assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", manifest.getContext());
         assertEquals("Manifest label should be", "Title ID1", manifest.getLabel());
         assertEquals("manifest should have one sequence", 1, manifest.getSequences().size());
     }
@@ -113,6 +114,7 @@ public class HomeControllerIntegrationTest {
         
         assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
         assertNotNull("Sequence should not be null", sequence);
+        assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", sequence.getContext());
         assertEquals("Should have a type", "sc:Sequence", sequence.getType());
     }
 
@@ -127,6 +129,7 @@ public class HomeControllerIntegrationTest {
         
         assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
         assertNotNull("Canvas should not be null", canvas);
+        assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", canvas.getContext());
         assertEquals("Should have a type", "sc:Canvas", canvas.getType());
     }
 
@@ -141,18 +144,10 @@ public class HomeControllerIntegrationTest {
         
         assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
         assertNotNull("Annotation should not be null", annotation);
+        assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", annotation.getContext());
         assertEquals("Should have a type", "oa:Annotation", annotation.getType());
     }
 
-    private ResponseEntity<Manifest> createAndExecuteManifestRequestWithId(String id) {
-        HttpHeaders headers = createDefaultHeaders();        
-        
-        ResponseEntity<Manifest> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/catalog/iiif/"+id+"/manifest", HttpMethod.GET,
-                new HttpEntity<Void>(headers), Manifest.class);
-        return response;
-    }
-    
     private HttpHeaders createDefaultHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.add(UserUtils.SSO_HEADER, "token");

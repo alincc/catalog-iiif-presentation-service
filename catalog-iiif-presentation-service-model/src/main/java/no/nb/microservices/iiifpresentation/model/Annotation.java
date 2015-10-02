@@ -25,9 +25,10 @@ public class Annotation {
         this.motivation = "sc:painting";
     }
     
-    public Annotation(String id,
+    public Annotation(Context context, String id,
             String on, Resource resource) {
         this();
+        this.context = context.getContext();
         this.id = id;
         this.on = on;
         this.resource = resource;

@@ -3,8 +3,6 @@ package no.nb.microservices.iiifpresentation.rest.controller;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import java.text.ParseException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +20,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import no.nb.commons.web.util.UserUtils;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
-import no.nb.microservices.catalogmetadata.model.struct.Resource;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
+import no.nb.microservices.catalogmetadata.test.struct.TestDiv;
 import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
@@ -73,21 +71,16 @@ public class ManifestControllerTest {
 
     @Test
     public void testGetCanvas() throws Exception {
-        String id = "p1";
         StructMap structMap = createDefaultStructMap();
-        Div div = new Div(id);
-        div.setOrderLabel("p1");
-        div.setType("PAGE");
-        Resource resource = new Resource();
-        resource.setHref("URN:NBN:no-nb_digibok_2001010100001_123");
-        div.setResource(resource);
-
+        Div div = TestDiv.aDefaultDiv()
+                .withPageNumber("TEST")
+                .build();
         structMap.addDiv(div);
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
         
-        mockMvc.perform(MockMvcRequestBuilders.get("/catalog/iiif/id1/canvas/"+id))
+        mockMvc.perform(MockMvcRequestBuilders.get("/catalog/iiif/id1/canvas/DIVTEST"))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/catalog/iiif/id1/canvas/"+id))
+            .andExpect(jsonPath("$.@id").value("http://localhost/catalog/iiif/id1/canvas/DIVTEST"))
             .andReturn();
     }
     
