@@ -18,7 +18,7 @@ public class ResourceBuilderTest {
             .widthHeight(height)
             .build();
         
-        assertEquals("should have a id pointing to image", "http://www.nb.no/services/iiif/api/id1", resource.getId());
+        assertEquals("should have a id pointing to image", "http://www.nb.no/services/image/resolver/id1", resource.getId());
         assertEquals("Should have a type", "dctypes:Image", resource.getType());
         assertEquals("Should have a format", "image/jpeg", resource.getFormat());
         assertEquals("should have widht", width, resource.getWidth());
