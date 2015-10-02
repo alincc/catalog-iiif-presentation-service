@@ -5,13 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({"context", "id", "type", "motivation", "on"})
+@JsonPropertyOrder({"id", "type", "format", "service", "height", "width"})
 public class Resource {
     @JsonProperty("@id")
     private String id;
     @JsonProperty("@type")
     private String type;
     private String format;
+    private Service service;
     private int width;
     private int height;
     
@@ -22,11 +23,12 @@ public class Resource {
     }
 
     public Resource(String id, int width,
-            int height) {
+            int height, Service service) {
         this();
         this.id = id;
         this.width = width;
         this.height = height;
+        this.service = service;
     }
 
     public String getId() {
@@ -41,6 +43,10 @@ public class Resource {
         return format;
     }
 
+    public Service getService() {
+        return service;
+    }
+    
     public int getWidth() {
         return width;
     }

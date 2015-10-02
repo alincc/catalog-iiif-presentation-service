@@ -23,6 +23,7 @@ public class ResourceBuilderTest {
         assertEquals("Should have a format", "image/jpeg", resource.getFormat());
         assertEquals("should have widht", width, resource.getWidth());
         assertEquals("should have height", height, resource.getHeight());
+        assertNotNull("Should hava a service", resource.getService());
     }
 
 }

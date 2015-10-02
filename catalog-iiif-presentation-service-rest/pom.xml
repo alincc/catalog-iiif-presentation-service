@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <start-class>no.nb.microservices.iiifpresentation.Application</start-class>
         <docker.image.prefix>nb</docker.image.prefix>
-        <catalog-metadata.version>0.0.1-101</catalog-metadata.version>
+        <catalog-metadata.version>0.0.1-106</catalog-metadata.version>
     </properties>
 
     <dependencies>
@@ -137,6 +137,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-cypher-compiler-2.1</artifactId>
+            <version>2.1.5</version>
         </dependency>
     </dependencies>
 

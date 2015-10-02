@@ -1,6 +1,7 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
 import no.nb.microservices.iiifpresentation.model.Resource;
+import no.nb.microservices.iiifpresentation.model.Service;
 
 public class ResourceBuilder {
 
@@ -24,9 +25,14 @@ public class ResourceBuilder {
     }
     
     public Resource build() {
-        String iiifImageServer = "http://www.nb.no/services/iiif/api/";
-        String id = iiifImageServer + imageId;
-        
-        return new Resource(id, width, height);
+        String id = new IiifImageServerUrlBuilder()
+                .withIdentifer(imageId)
+                .toString();
+        Service service = new ServiceBuilder()
+            .withIdentifier(imageId)
+            .withWidth(width)
+            .withHeight(height)
+            .build();
+        return new Resource(id, width, height, service);
     }
 }
