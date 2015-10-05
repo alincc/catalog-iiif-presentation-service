@@ -26,7 +26,7 @@ import no.nb.microservices.catalogmetadata.test.struct.TestDiv;
 import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
-import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
+import no.nb.microservices.iiifpresentation.exception.ItemNotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ManifestControllerTest {
@@ -156,14 +156,6 @@ public class ManifestControllerTest {
             .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))
             .andExpect(header().doesNotExist("Link"))
             .andReturn();
-    }
-    
-    @Test
-    public void testDefaultHandler() throws Exception {
-        when(manifestService.getManifest("12345")).thenThrow(new RetrieveItemException("JUnit test exception"));
-        
-        mockMvc.perform(get("/catalog/iiif/12345/manifest"))
-            .andExpect(status().is5xxServerError());
     }
     
     private void mockRequest() {

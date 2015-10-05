@@ -1,20 +1,14 @@
 package no.nb.microservices.iiifpresentation.rest.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wordnik.swagger.annotations.Api;
@@ -26,6 +20,8 @@ import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
+import no.nb.microservices.iiifpresentation.exception.AnnotationNotFoundException;
+import no.nb.microservices.iiifpresentation.exception.CanvasNotFoundException;
 import no.nb.microservices.iiifpresentation.model.Annotation;
 import no.nb.microservices.iiifpresentation.model.Canvas;
 import no.nb.microservices.iiifpresentation.model.Context;
@@ -41,8 +37,6 @@ import no.nb.microservices.iiifpresentation.rest.controller.assembler.SequenceBu
 @RequestMapping("/catalog/iiif")
 @Api(value = "/iiif", description = "Home api")
 public class ManifestController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManifestController.class);
 
     private final ManifestService manifestService;
 
@@ -90,7 +84,7 @@ public class ManifestController {
             @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
         ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
         
-        Div div = itemStructPair.getStruct().getDivById(name);
+        Div div = getDivById(name, itemStructPair);
         
         Canvas canvas = new CanvasBuilder()
                 .withContext(new IiifPresentationContext())
@@ -108,7 +102,7 @@ public class ManifestController {
             @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
         ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
 
-        Div div = itemStructPair.getStruct().getDivByHref(name);
+        Div div = getDivByHref(name, itemStructPair);
 
         Annotation annotation = new AnnotationBuilder()
                 .withContext(new IiifPresentationContext())
@@ -120,21 +114,6 @@ public class ManifestController {
         return new ResponseEntity<>(annotation, createIiifHeaders(acceptType), HttpStatus.OK);
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "It looks like we have a internal error in our application. The error have been logged and will be looked at by our development team")
-    public void defaultHandler(HttpServletRequest req, Exception e) {
-        LOGGER.error("" +
-                "Got an unexcepted exception.\n" +
-                "Request URI: " + req.getRequestURI() + "\n" +
-                "Auth Type: " + req.getAuthType() + "\n" +
-                "Context Path: " + req.getContextPath() + "\n" +
-                "Path Info: " + req.getPathInfo() + "\n" +
-                "Query String: " + req.getQueryString() + "\n" +
-                "Remote User: " + req.getRemoteUser() + "\n" +
-                "Method: " + req.getMethod() + "\n" +
-                "Username: " + ((req.getUserPrincipal()  != null) ? req.getUserPrincipal().getName() : "Anonymous") + "\n"
-                , e);
-    }
 
     private HttpHeaders createIiifHeaders(String acceptType) {
         Context context = ContextFactory.getInstance(acceptType);
@@ -142,4 +121,20 @@ public class ManifestController {
         headers.putAll(context.getHeaders());
         return headers;
     }    
+
+    private Div getDivById(String name, ItemStructPair itemStructPair) {
+        Div div = itemStructPair.getStruct().getDivById(name);
+        if (div == null) {
+            throw new CanvasNotFoundException("Canvas " + name + " not found");
+        }
+        return div;
+    }
+
+    private Div getDivByHref(String name, ItemStructPair itemStructPair) {
+        Div div = itemStructPair.getStruct().getDivByHref(name);
+        if (div == null) {
+            throw new AnnotationNotFoundException("Annotation " + name + " not found");
+        }
+        return div;
+    }
 }
