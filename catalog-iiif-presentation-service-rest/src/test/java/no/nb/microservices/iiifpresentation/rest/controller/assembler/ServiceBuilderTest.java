@@ -27,7 +27,7 @@ public class ServiceBuilderTest {
                 .aDefaultService()
                 .build();
         
-        assertEquals("http://www.nb.no/services/iiif/api/" + TestService.DEFAULT_IDENTIFIER, service.getId());
+        assertEquals("http://www.nb.no/services/image/resolver/" + TestService.DEFAULT_IDENTIFIER, service.getId());
     }
 
     @Test
