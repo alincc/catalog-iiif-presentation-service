@@ -28,7 +28,7 @@ public class SequenceBuilderTest {
     @Test
     public void whenIdThenCreateContext() {
         Sequence sequence = new SequenceBuilder()
-                .withId("id1")
+                .withManifestId("id1")
                 .withStruct(TestStructMap.aDefaultStructMap().build())
                 .build();
 
@@ -42,23 +42,23 @@ public class SequenceBuilderTest {
     
     @Test
     public void sequenceMustHaveAType() {
-        Sequence sequence = new SequenceFixtures().SEQUENCE;
+        Sequence sequence = TestSequence.aDefaultSequence().build();
         
         assertEquals("sc:Sequence", sequence.getType());
     }
 
     @Test
     public void sequenceMustHaveALabel() {
-        Sequence sequence = new SequenceFixtures().SEQUENCE;
+        Sequence sequence = TestSequence.aDefaultSequence().build();
         
         assertEquals("Current Page Order", sequence.getLabel());
     }
 
     @Test
     public void sequenceMustHaveACanvas() {
-        Sequence sequence = new SequenceFixtures().SEQUENCE;
+        Sequence sequence = TestSequence.aDefaultSequence().build();
         
-        assertEquals(10, sequence.getCanvases().size());
+        assertEquals(15, sequence.getCanvases().size());
     }
 
     private void createDefaultRequestAttributes() {

@@ -14,7 +14,7 @@ import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
 import no.nb.microservices.iiifpresentation.core.item.ItemRepository;
 import no.nb.microservices.iiifpresentation.core.metadata.repository.MetadataRepository;
-import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
+import no.nb.microservices.iiifpresentation.exception.ItemNotFoundException;
 import reactor.Environment;
 import reactor.fn.Function;
 import reactor.fn.tuple.Tuple2;
@@ -49,7 +49,7 @@ public class ManifestServiceImpl implements ManifestService {
 
             return resp.next().await();
         } catch (Exception ex) {
-            throw new RetrieveItemException("Failed getting metadata for id " + id, ex);
+            throw new ItemNotFoundException("Failed getting metadata for id " + id, ex);
         }
 
     }

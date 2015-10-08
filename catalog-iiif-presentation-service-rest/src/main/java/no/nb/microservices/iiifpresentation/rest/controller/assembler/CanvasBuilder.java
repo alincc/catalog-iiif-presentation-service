@@ -3,69 +3,70 @@ package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.hateoas.Link;
 
+import no.nb.microservices.catalogmetadata.model.struct.Div;
+import no.nb.microservices.iiifpresentation.model.Annotation;
 import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.Context;
+import no.nb.microservices.iiifpresentation.model.NullContext;
 import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
 
 public class CanvasBuilder {
 
-    private String id;
-    private String name;
-    private String pageUrn;
-    private String label;
-    private int width;
-    private int height;
+    private Context context;
+    private String manifestId;
+    private Div div;
     
-    public CanvasBuilder withId(String id) {
-        this.id = id;
+    public CanvasBuilder() {
+        context = new NullContext();
+    }
+    
+    public CanvasBuilder withContext(Context context) {
+        this.context = context;
+        return this;
+    }
+    
+    public CanvasBuilder withManifestId(String manifestId) {
+        this.manifestId = manifestId;
         return this;
     }
 
-    public CanvasBuilder withName(String name) {
-        this.name = name;
+    public CanvasBuilder withDiv(final Div div) {
+        this.div = div;
         return this;
     }
-
-    public CanvasBuilder withPageUrn(String pageUrn) {
-        this.pageUrn = pageUrn;
-        return this;
-    }
-
-    public CanvasBuilder withLabel(String label) {
-        this.label = label;
-        return this;
-    }
-
-    public CanvasBuilder withWidth(int width) {
-        this.width = width;
-        return this;
-    }
-
-    public CanvasBuilder withHeight(int height) {
-        this.height = height;
-        return this;
-    }
-
+    
     public Canvas build() {
         validate();
 
-        Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(id, name)).withSelfRel();
-        return new Canvas(selfRel.getHref(), label, width, height);
+        Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, div.getId(), null)).withSelfRel();
+        List<Annotation> images = createImages();
+        
+        return new Canvas(context, selfRel.getHref(), div.getType(), div.getResource().getWidth(), div.getResource().getHeight(), images);
     }
 
     private void validate() {
-        if (id == null || id.isEmpty()) {
-            throw new IllegalStateException("Missing required id");
+        if (manifestId == null || manifestId.isEmpty()) {
+            throw new IllegalStateException("Missing required manifestId");
+        }
+        if (div == null) {
+            throw new IllegalStateException("Missing required div");
         }
 
-        if (name == null || name.isEmpty()) {
-            throw new IllegalStateException("Missing required name");
-        }
-
-        if (label == null || label.isEmpty()) {
-            throw new IllegalStateException("Missing required label");
-        }
     }
 
+    private List<Annotation> createImages() {
+        Annotation annotation = new AnnotationBuilder()
+                .withManifestId(manifestId)
+                .withCanvasId(div.getId())
+                .withResource(div.getResource())
+                .build();
+        List<Annotation> images = Arrays.asList(annotation);
+        return images;
+    }
 }
+

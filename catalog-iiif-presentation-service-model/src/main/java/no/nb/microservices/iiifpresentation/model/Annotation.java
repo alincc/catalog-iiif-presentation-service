@@ -1,8 +1,5 @@
 package no.nb.microservices.iiifpresentation.model;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,35 +7,33 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"context", "id", "type", "label", "height", "width"})
-public class Canvas {
+@JsonPropertyOrder({"context", "id", "type", "motivation", "resource", "on"})
+public class Annotation {
     @JsonProperty("@context")
     private String context;
     @JsonProperty("@id")
     private String id;
     @JsonProperty("@type")
     private String type;
-    private String label;
-    private int width;
-    private int height;
-    private List<Annotation> images;
+    private String motivation;
+    private Resource resource;
+    private String on;
 
-    @JsonCreator
-    public Canvas() {
+    public Annotation() {
         super();
-        this.type = "sc:Canvas";
+        this.type = "oa:Annotation";
+        this.motivation = "sc:painting";
     }
     
-    public Canvas(Context context, String id, String label, int width, int height, List<Annotation> images) {
+    public Annotation(Context context, String id,
+            String on, Resource resource) {
         this();
         this.context = context.getContext();
         this.id = id;
-        this.label = label;
-        this.width = width;
-        this.height = height;
-        this.images = images;
+        this.on = on;
+        this.resource = resource;
     }
-    
+
     public String getContext() {
         return context;
     }
@@ -51,20 +46,16 @@ public class Canvas {
         return type;
     }
 
-    public String getLabel() {
-        return label;
+    public String getMotivation() {
+        return motivation;
     }
 
-    public int getWidth() {
-        return width;
+    public Resource getResource() {
+        return resource;
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    public List<Annotation> getImages() {
-        return images;
+    public String getOn() {
+        return on;
     }
 
 }

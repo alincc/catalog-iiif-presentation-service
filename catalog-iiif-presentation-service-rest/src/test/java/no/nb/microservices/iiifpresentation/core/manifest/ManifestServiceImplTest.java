@@ -21,7 +21,7 @@ import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
 import no.nb.microservices.iiifpresentation.core.item.ItemRepository;
 import no.nb.microservices.iiifpresentation.core.metadata.repository.MetadataRepository;
-import no.nb.microservices.iiifpresentation.exception.RetrieveItemException;
+import no.nb.microservices.iiifpresentation.exception.ItemNotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ManifestServiceImplTest {
@@ -57,7 +57,7 @@ public class ManifestServiceImplTest {
         assertNotNull("Should have a struct", itemAndStructPair.getStruct());
     }
     
-    @Test(expected=RetrieveItemException.class)
+    @Test(expected=ItemNotFoundException.class)
     public void testExceptionhandling() throws InterruptedException {
         String id = "id1";
         when(itemRepository.getById(eq(id), anyString(), anyString(), anyString(), anyString())).thenReturn(new ItemResource());

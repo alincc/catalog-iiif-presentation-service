@@ -8,20 +8,29 @@ import org.springframework.hateoas.Link;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
 import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.Context;
+import no.nb.microservices.iiifpresentation.model.NullContext;
 import no.nb.microservices.iiifpresentation.model.Sequence;
 import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
 
 public class SequenceBuilder {
 
-    private String id;
+    private Context context;
+    private String manifestId;
     private StructMap struct;
     
     public SequenceBuilder() {
         super();
+        context = new NullContext();
     }
 
-    public SequenceBuilder withId(String id) {
-        this.id = id;
+    public SequenceBuilder withContext(final Context context) {
+        this.context = context;
+        return this;
+    }
+    
+    public SequenceBuilder withManifestId(String manifestId) {
+        this.manifestId = manifestId;
         return this;
     }
 
@@ -29,20 +38,16 @@ public class SequenceBuilder {
         this.struct = struct;
         return this;
     }
-
+    
     public Sequence build() {
         validate();
-        Link selfRel = linkTo(methodOn(ManifestController.class).getSequence(id)).withSelfRel();
-        Sequence sequence = new Sequence(selfRel.getHref());
+        Link selfRel = linkTo(methodOn(ManifestController.class).getSequence(manifestId, null)).withSelfRel();
+        Sequence sequence = new Sequence(context, selfRel.getHref());
         
         for(Div div : struct.getDivs()) {
             Canvas canvas = new CanvasBuilder()
-                .withId(id)
-                .withName(div.getOrderLabel())
-                .withPageUrn(div.getResource().getOriginalName())
-                .withLabel(div.getOrderLabel())
-                .withWidth(div.getResource().getWidth())
-                .withHeight(div.getResource().getHeight())
+                .withManifestId(manifestId)
+                .withDiv(div)
                 .build();
             sequence.addCanvas(canvas);
         }
@@ -51,8 +56,8 @@ public class SequenceBuilder {
     }
 
     private void validate() {
-        if (id == null || id.isEmpty()) {
-            throw new IllegalStateException("Missing id");
+        if (manifestId == null || manifestId.isEmpty()) {
+            throw new IllegalStateException("Missing manifestId");
         }
         if (struct == null || struct.getDivs().isEmpty()) {
             throw new IllegalStateException("Missing struct");
