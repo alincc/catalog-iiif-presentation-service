@@ -19,10 +19,13 @@ import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import no.nb.htrace.annotation.Traceable;
+import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
+import no.nb.microservices.iiifpresentation.model.Canvas;
 import no.nb.microservices.iiifpresentation.model.Manifest;
 import no.nb.microservices.iiifpresentation.model.Sequence;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.CanvasBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.ManifestBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.SequenceBuilder;
 
@@ -66,7 +69,27 @@ public class ManifestController {
 
         return new ResponseEntity<>(sequence, HttpStatus.OK);
     }
-    
+
+    @Traceable(description="canvas")
+    @RequestMapping(value = "/{id}/canvas/{name}", method = RequestMethod.GET)
+    public ResponseEntity<Canvas> getCanvas(@PathVariable String id,
+            @PathVariable String name) {
+        ItemStructPair itemStructPair = manifestService.getManifest(id);
+        
+        Div div = itemStructPair.getStruct().getDivById(name);
+        
+        Canvas canvas = new CanvasBuilder()
+                .withId(id)
+                .withPageUrn(div.getResource().getHref())
+                .withName(name)
+                .withLabel(div.getOrderLabel())
+                .withWidth(div.getResource().getWidth())
+                .withHeight(div.getResource().getHeight())
+                .build();
+
+        return new ResponseEntity<>(canvas, HttpStatus.OK);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "It looks like we have a internal error in our application. The error have been logged and will be looked at by our development team")
     public void defaultHandler(HttpServletRequest req, Exception e) {
