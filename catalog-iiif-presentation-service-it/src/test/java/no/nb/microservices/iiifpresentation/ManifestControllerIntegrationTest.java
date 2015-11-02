@@ -44,7 +44,7 @@ import no.nb.microservices.iiifpresentation.model.Sequence;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {Application.class, RibbonClientConfiguration.class})
 @WebIntegrationTest("server.port:0")
-public class HomeControllerIntegrationTest {
+public class ManifestControllerIntegrationTest {
 
     @Value("${local.server.port}")
     int port;
