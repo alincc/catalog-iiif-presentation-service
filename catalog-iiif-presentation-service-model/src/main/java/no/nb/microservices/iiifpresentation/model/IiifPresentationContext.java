@@ -1,7 +1,7 @@
 package no.nb.microservices.iiifpresentation.model;
 
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +15,8 @@ public class IiifPresentationContext implements Context {
     @Override
     public Map<String, List<String>> getHeaders() {
         Map<String, List<String>> headers = new HashMap<>();
-        List<String> headerValues = new LinkedList<String>();
-        headerValues.add("<http://iiif.io/api/presentation/2/context.json>;rel=\"http://www.w3.org/ns/json-ld#context\";type=\"application/ld+json\"");
-        headers.put("Link", headerValues);
+        headers.put("Link", Arrays.asList("<http://iiif.io/api/presentation/2/context.json>;rel=\"http://www.w3.org/ns/json-ld#context\";type=\"application/ld+json\""));
+        headers.put("Content-Type", Arrays.asList("application/json;charset=UTF-8"));
         return headers;
     }
 

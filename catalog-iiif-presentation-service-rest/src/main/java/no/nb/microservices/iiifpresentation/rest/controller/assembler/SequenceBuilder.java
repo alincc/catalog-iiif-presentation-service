@@ -59,7 +59,7 @@ public class SequenceBuilder {
         if (manifestId == null || manifestId.isEmpty()) {
             throw new IllegalStateException("Missing manifestId");
         }
-        if (struct == null || struct.getDivs().isEmpty()) {
+        if (struct == null || struct.getDivs() == null || struct.getDivs().isEmpty()) {
             throw new IllegalStateException("Missing struct");
         }
     }
