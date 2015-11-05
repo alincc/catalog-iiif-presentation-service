@@ -56,7 +56,7 @@ public class ManifestBuilder {
         manifest.setType("sc:Manifest");
         Link selfRel = linkTo(methodOn(ManifestController.class).getManifest(id, null)).withSelfRel();
         manifest.setId(selfRel.getHref());
-        manifest.setLabel((item != null && item.getMetadata() != null && item.getMetadata().getCompositeTitle() != null) ? item.getMetadata().getCompositeTitle() : "Untitled");
+        manifest.setLabel((item != null && item.getMetadata() != null && item.getTitle() != null) ? item.getTitle() : "Untitled");
         if (item != null) {
             Metadata metadata = item.getMetadata();
             if (metadata != null) {
