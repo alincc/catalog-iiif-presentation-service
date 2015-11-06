@@ -5,7 +5,6 @@
         }
     },
     "metadata":{
-        "compositeTitle": "Title ID1",
         "titleInfo": {  
             "title":"Title ID1"
         },
@@ -28,5 +27,6 @@
         "isDigital": true,
         "isPublicDomain": true
     },
-    "id": "id1"
+    "id": "id1",
+    "title": "Title ID1"
 }
