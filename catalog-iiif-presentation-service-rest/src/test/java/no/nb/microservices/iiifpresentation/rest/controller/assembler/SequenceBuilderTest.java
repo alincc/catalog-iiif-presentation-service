@@ -1,7 +1,7 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
-import static org.junit.Assert.*;
-
+import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
+import no.nb.microservices.iiifpresentation.model.Sequence;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,8 +9,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
-import no.nb.microservices.iiifpresentation.model.Sequence;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class SequenceBuilderTest {
 
@@ -32,7 +32,7 @@ public class SequenceBuilderTest {
                 .withStruct(TestStructMap.aDefaultStructMap().build())
                 .build();
 
-        assertNotNull("http://localhost/catalog/iiif/id1/sequence/normal", sequence.getId());
+        assertNotNull("http://localhost/v1/catalog/iiif/id1/sequence/normal", sequence.getId());
     }
 
     @Test(expected=IllegalStateException.class)
@@ -62,7 +62,7 @@ public class SequenceBuilderTest {
     }
 
     private void createDefaultRequestAttributes() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/iiif/id1/manifest");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/manifest");
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);
         RequestContextHolder.setRequestAttributes(attributes);
     }

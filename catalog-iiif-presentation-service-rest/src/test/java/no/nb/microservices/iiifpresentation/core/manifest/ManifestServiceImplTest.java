@@ -1,10 +1,11 @@
 package no.nb.microservices.iiifpresentation.core.manifest;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-
+import no.nb.commons.web.util.UserUtils;
+import no.nb.microservices.catalogitem.rest.model.ItemResource;
+import no.nb.microservices.catalogmetadata.model.struct.StructMap;
+import no.nb.microservices.iiifpresentation.core.item.ItemRepository;
+import no.nb.microservices.iiifpresentation.core.metadata.repository.MetadataRepository;
+import no.nb.microservices.iiifpresentation.exception.ItemNotFoundException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,12 +17,10 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import no.nb.commons.web.util.UserUtils;
-import no.nb.microservices.catalogitem.rest.model.ItemResource;
-import no.nb.microservices.catalogmetadata.model.struct.StructMap;
-import no.nb.microservices.iiifpresentation.core.item.ItemRepository;
-import no.nb.microservices.iiifpresentation.core.metadata.repository.MetadataRepository;
-import no.nb.microservices.iiifpresentation.exception.ItemNotFoundException;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ManifestServiceImplTest {
@@ -67,7 +66,7 @@ public class ManifestServiceImplTest {
     }
     
     private void mockRequest() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/iiif/id1/manifest");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/manifest");
         String ip = "123.45.123.123";
         request.addHeader(UserUtils.REAL_IP_HEADER, ip);
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);

@@ -1,11 +1,12 @@
 package no.nb.microservices.iiifpresentation.rest.controller;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import no.nb.commons.web.util.UserUtils;
+import no.nb.microservices.catalogmetadata.model.struct.Div;
+import no.nb.microservices.catalogmetadata.model.struct.StructMap;
+import no.nb.microservices.catalogmetadata.test.struct.TestDiv;
+import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
+import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
+import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,14 +21,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import no.nb.commons.web.util.UserUtils;
-import no.nb.microservices.catalogmetadata.model.struct.Div;
-import no.nb.microservices.catalogmetadata.model.struct.StructMap;
-import no.nb.microservices.catalogmetadata.test.struct.TestDiv;
-import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
-import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
-import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
-import no.nb.microservices.iiifpresentation.exception.ItemNotFoundException;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ManifestControllerTest {
@@ -55,11 +51,11 @@ public class ManifestControllerTest {
     public void testGetManifest() throws Exception {
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
         
-        MvcResult andReturn = mockMvc.perform(get("/catalog/iiif/id1/manifest"))
+        MvcResult andReturn = mockMvc.perform(get("/v1/catalog/iiif/id1/manifest"))
             .andExpect(status().isOk())
             .andExpect(header().string("Content-Type", "application/json;charset=UTF-8"))
             .andExpect(header().string("Link", "<http://iiif.io/api/presentation/2/context.json>;rel=\"http://www.w3.org/ns/json-ld#context\";type=\"application/ld+json\""))
-            .andExpect(jsonPath("$.@id").value("http://localhost/catalog/iiif/id1/manifest"))
+            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/manifest"))
             .andReturn();
         
         System.out.println(andReturn.getResponse().getContentAsString());
@@ -69,12 +65,12 @@ public class ManifestControllerTest {
     public void testManifestJsonLdAcceptHeader() throws Exception {
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
         
-        mockMvc.perform(get("/catalog/iiif/id1/manifest")
+        mockMvc.perform(get("/v1/catalog/iiif/id1/manifest")
                 .accept("application/ld+json"))
             .andExpect(status().isOk())
             .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))
             .andExpect(header().doesNotExist("Link"))
-            .andExpect(jsonPath("$.@id").value("http://localhost/catalog/iiif/id1/manifest"))
+            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/manifest"))
             .andReturn();
     }
 
@@ -82,9 +78,9 @@ public class ManifestControllerTest {
     public void testGetSequence() throws Exception {
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
         
-        mockMvc.perform(get("/catalog/iiif/id1/sequence/normal"))
+        mockMvc.perform(get("/v1/catalog/iiif/id1/sequence/normal"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/catalog/iiif/id1/sequence/normal"))
+            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/sequence/normal"))
             .andReturn();
     }
 
@@ -92,7 +88,7 @@ public class ManifestControllerTest {
     public void testSequenceJsonLdAcceptHeader() throws Exception {
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
         
-        mockMvc.perform(get("/catalog/iiif/id1/sequence/normal")
+        mockMvc.perform(get("/v1/catalog/iiif/id1/sequence/normal")
                 .accept("application/ld+json"))
             .andExpect(status().isOk())
             .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))
@@ -109,9 +105,9 @@ public class ManifestControllerTest {
         structMap.addDiv(div);
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
         
-        mockMvc.perform(get("/catalog/iiif/id1/canvas/DIVTEST"))
+        mockMvc.perform(get("/v1/catalog/iiif/id1/canvas/DIVTEST"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/catalog/iiif/id1/canvas/DIVTEST"))
+            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/canvas/DIVTEST"))
             .andReturn();
     }
 
@@ -120,7 +116,7 @@ public class ManifestControllerTest {
         StructMap structMap = createDefaultStructMap();
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
         
-        mockMvc.perform(get("/catalog/iiif/id1/canvas/DIV1")
+        mockMvc.perform(get("/v1/catalog/iiif/id1/canvas/DIV1")
                 .accept("application/ld+json"))
             .andExpect(status().isOk())
             .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))
@@ -138,9 +134,9 @@ public class ManifestControllerTest {
         structMap.addDiv(div);
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
         
-        mockMvc.perform(get("/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"))
+        mockMvc.perform(get("/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"))
+            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"))
             .andReturn();
     }
 
@@ -153,7 +149,7 @@ public class ManifestControllerTest {
         structMap.addDiv(div);
         when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
         
-        mockMvc.perform(get("/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST")
+        mockMvc.perform(get("/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST")
                 .accept("application/ld+json"))
             .andExpect(status().isOk())
             .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))

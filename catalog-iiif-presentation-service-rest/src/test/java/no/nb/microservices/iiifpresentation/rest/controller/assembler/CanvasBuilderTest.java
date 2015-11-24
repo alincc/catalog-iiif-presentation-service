@@ -1,7 +1,6 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
-import static org.junit.Assert.*;
-
+import no.nb.microservices.iiifpresentation.model.Canvas;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +8,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import no.nb.microservices.iiifpresentation.model.Canvas;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class CanvasBuilderTest {
 
@@ -27,7 +27,7 @@ public class CanvasBuilderTest {
     public void canvasMustHaveId() {
         Canvas canvas = createDefaultCanvas();
         
-        assertEquals("http://localhost/catalog/iiif/id1/canvas/id1", canvas.getId());
+        assertEquals("http://localhost/v1/catalog/iiif/id1/canvas/id1", canvas.getId());
     }
 
     @Test(expected=IllegalStateException.class)
@@ -71,7 +71,7 @@ public class CanvasBuilderTest {
     }
     
     private void createDefaultRequestAttributes() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/iiif/id1/canvas/p1");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/canvas/p1");
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);
         RequestContextHolder.setRequestAttributes(attributes);
     }

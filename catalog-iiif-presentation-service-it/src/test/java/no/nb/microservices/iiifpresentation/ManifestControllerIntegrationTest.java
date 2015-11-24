@@ -1,12 +1,18 @@
 package no.nb.microservices.iiifpresentation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.Arrays;
-
+import com.netflix.loadbalancer.BaseLoadBalancer;
+import com.netflix.loadbalancer.ILoadBalancer;
+import com.netflix.loadbalancer.Server;
+import com.squareup.okhttp.mockwebserver.Dispatcher;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
+import no.nb.commons.web.util.UserUtils;
+import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
+import no.nb.microservices.iiifpresentation.model.Annotation;
+import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.Manifest;
+import no.nb.microservices.iiifpresentation.model.Sequence;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -26,20 +32,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.loadbalancer.BaseLoadBalancer;
-import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.Server;
-import com.squareup.okhttp.mockwebserver.Dispatcher;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
+import java.io.IOException;
+import java.util.Arrays;
 
-import no.nb.commons.web.util.UserUtils;
-import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
-import no.nb.microservices.iiifpresentation.model.Annotation;
-import no.nb.microservices.iiifpresentation.model.Canvas;
-import no.nb.microservices.iiifpresentation.model.Manifest;
-import no.nb.microservices.iiifpresentation.model.Sequence;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {Application.class, RibbonClientConfiguration.class})
@@ -66,9 +62,9 @@ public class ManifestControllerIntegrationTest {
 
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
-                if (request.getPath().startsWith("/catalog/items/id1")) {
+                if (request.getPath().startsWith("/v1/catalog/items/id1")) {
                     return new MockResponse().setBody(itemId1Mock).setHeader("Content-Type", "application/hal+json; charset=utf-8");
-                } else if (request.getPath().startsWith("/catalog/metadata/id1/struct")) {
+                } else if (request.getPath().startsWith("/v1/catalog/metadata/id1/struct")) {
                     return new MockResponse().setBody(structMap).setHeader("Content-Type", "application/xml; charset=utf-8");
                 }
                 return new MockResponse().setResponseCode(404);
@@ -92,7 +88,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();        
         
         ResponseEntity<Manifest> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/catalog/iiif/id1/manifest", HttpMethod.GET,
+                "http://localhost:" + port + "/v1/catalog/iiif/id1/manifest", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Manifest.class);
         Manifest manifest = response.getBody();
         
@@ -108,7 +104,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Sequence> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/catalog/iiif/id1/sequence/normal", HttpMethod.GET,
+                "http://localhost:" + port + "/v1/catalog/iiif/id1/sequence/normal", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Sequence.class);
         Sequence sequence = response.getBody();
         
@@ -123,7 +119,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Canvas> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/catalog/iiif/id1/canvas/DIV1", HttpMethod.GET,
+                "http://localhost:" + port + "/v1/catalog/iiif/id1/canvas/DIV1", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Canvas.class);
         Canvas canvas = response.getBody();
         
@@ -138,7 +134,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_0001", HttpMethod.GET,
+                "http://localhost:" + port + "/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_0001", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Annotation.class);
         Annotation annotation = response.getBody();
         
