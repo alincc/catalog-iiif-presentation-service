@@ -23,6 +23,7 @@ public class Service {
     private int height;
     private List<Size> sizes;
     private List<TileInfo> tiles;
+    private double physicalScale;
     
     public Service() {
         super();
@@ -30,11 +31,16 @@ public class Service {
         this.protocol = "http://iiif.io/api/image";
     }
 
-    public Service(String id, int width, int height) {
+    public Service(String id, int width, int height, double physicalScale) {
         this();
         this.id = id;
         this.width = width;
         this.height = height;
+        this.physicalScale = physicalScale;
+    }
+
+    public double getPhysicalScale() {
+        return physicalScale;
     }
 
     public String getContext() {

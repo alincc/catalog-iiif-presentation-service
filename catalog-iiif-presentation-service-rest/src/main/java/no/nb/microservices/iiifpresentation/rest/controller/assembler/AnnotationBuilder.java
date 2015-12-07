@@ -52,7 +52,8 @@ public class AnnotationBuilder {
         Resource iiifResource = new ResourceBuilder()
                 .withImageId(resource.getHref())
                 .withWidth(resource.getWidth())
-                .widthHeight(resource.getHeight())
+                .withHeight(resource.getHeight())
+                .withScanResolution(resource.getScanResolution())
                 .build();
         return new Annotation(context, selfRel.getHref(), canvasRel.getHref(), iiifResource);
     }

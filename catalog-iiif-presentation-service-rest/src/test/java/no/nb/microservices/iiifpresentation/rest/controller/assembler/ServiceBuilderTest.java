@@ -58,6 +58,16 @@ public class ServiceBuilderTest {
     }
 
     @Test
+    public void testPhysicalScale() {
+        Service service = TestService
+                .aDefaultService()
+                .withPhysicalScale(400)
+                .build();
+
+        assertEquals(0.0025, service.getPhysicalScale(), 0.0001f);
+    }
+
+    @Test
     public void testTiles() {
         Service service = TestService
                 .aDefaultService()

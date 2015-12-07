@@ -15,7 +15,7 @@ public class Resource {
     private Service service;
     private int width;
     private int height;
-    
+
     public Resource() {
         super();
         this.type = "dctypes:Image";
@@ -54,5 +54,4 @@ public class Resource {
     public int getHeight() {
         return height;
     }
-
 }
