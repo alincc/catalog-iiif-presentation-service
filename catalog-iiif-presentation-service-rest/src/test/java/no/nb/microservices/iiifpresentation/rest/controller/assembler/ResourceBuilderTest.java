@@ -25,7 +25,7 @@ public class ResourceBuilderTest {
         assertEquals("Should have a format", "image/jpeg", resource.getFormat());
         assertEquals("should have widht", width, resource.getWidth());
         assertEquals("should have height", height, resource.getHeight());
-        assertEquals(physicalScale, resource.getService().getPhysicalScale(), 0.0001f);
+        assertEquals(physicalScale, resource.getService().getService().getPhysicalScale(), 0.0001f);
         assertNotNull("Should hava a service", resource.getService());
     }
 

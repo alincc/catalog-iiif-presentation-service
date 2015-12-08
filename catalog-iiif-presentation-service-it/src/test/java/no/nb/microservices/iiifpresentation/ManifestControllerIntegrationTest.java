@@ -142,7 +142,6 @@ public class ManifestControllerIntegrationTest {
         assertNotNull("Annotation should not be null", annotation);
         assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", annotation.getContext());
         assertEquals("Should have a type", "oa:Annotation", annotation.getType());
-        assertEquals("Should have a physicalScale", 0.0025, annotation.getResource().getService().getPhysicalScale(), 0.0001f);
     }
 
     private HttpHeaders createDefaultHeaders() {

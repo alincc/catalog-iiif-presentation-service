@@ -1,7 +1,7 @@
 package no.nb.microservices.iiifpresentation.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,27 +19,46 @@ public class Service {
     private String id;
     private String protocol;
     private List<String> profile;
-    private int width;
-    private int height;
+    private Integer width;
+    private Integer height;
     private List<Size> sizes;
     private List<TileInfo> tiles;
-    private double physicalScale;
+    private Double physicalScale;
+    private String physicalUnits;
+    private Service service;
     
     public Service() {
         super();
-        this.context = "http://iiif.io/api/image/1/context.json";
-        this.protocol = "http://iiif.io/api/image";
+    }
+    
+    public Service(Service service) {
+        super();
+        this.service = service;
     }
 
-    public Service(String id, int width, int height, double physicalScale) {
+    public Service(String context, List<String> profile, Double physicalScale,
+            Service service) {
+        super();
+        this.context = context;
+        this.profile = profile;
+        this.physicalScale = physicalScale;
+        this.service = service;
+    }
+
+    public Service(String context, List<String> profile, String protocol, String id, Integer width, Integer height, Double physicalScale, String physicalUnits, Service service) {
         this();
+        this.context = context;
+        this.protocol = protocol;
+        this.profile = profile;
         this.id = id;
         this.width = width;
         this.height = height;
         this.physicalScale = physicalScale;
+        this.physicalUnits = physicalUnits;
+        this.service = service;
     }
 
-    public double getPhysicalScale() {
+    public Double getPhysicalScale() {
         return physicalScale;
     }
 
@@ -61,16 +80,17 @@ public class Service {
 
     public List<String> getProfile() {
         if (profile == null) {
-            profile = Arrays.asList("http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level0"); 
+            return Collections.emptyList();
+        } else {
+            return profile;
         }
-        return profile;
     }
 
-    public int getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
@@ -79,7 +99,7 @@ public class Service {
     }
 
     public List<Size> getSizes() {
-        if (sizes == null) {
+        if (sizes == null && width != null) {
             int levels = getNumberOfLevels(width, height);
             sizes = createSizes(levels);
         }
@@ -89,17 +109,21 @@ public class Service {
     public List<TileInfo> getTiles() {
         if (tiles == null) {
             List<Integer> scaleFactors = getScaleFactors();
-            tiles = new ArrayList<>();
-            tiles.add(new TileInfo(1024, null, scaleFactors));
+            if (!scaleFactors.isEmpty()) {
+                tiles = new ArrayList<>();
+                tiles.add(new TileInfo(1024, null, scaleFactors));
+            }
         }
         return tiles;
     }
 
     private List<Integer> getScaleFactors() {
         List<Integer> scaleFactors = new ArrayList<>();
-        int numberOfLevels = getNumberOfLevels(width, height);
-        for(int i = 0; i < numberOfLevels; i++) {
-            scaleFactors.add(1<<i);
+        if (width != null) {
+            int numberOfLevels = getNumberOfLevels(width, height);
+            for(int i = 0; i < numberOfLevels; i++) {
+                scaleFactors.add(1<<i);
+            }
         }
         return scaleFactors;
     }    
@@ -130,5 +154,13 @@ public class Service {
         }
         return sizes;
     }
-    
+
+    public Service getService() {
+        return service;
+    }
+
+    public String getPhysicalUnits() {
+        return physicalUnits;
+    }
+
 }

@@ -16,7 +16,9 @@ public class ServiceBuilderTest {
 
     @Test
     public void testContext() {
-        Service service = TestService.aDefaultService().build();
+        Service service = TestService.aDefaultService()
+                .withContext("http://iiif.io/api/image/1/context.json")
+                .build();
         
         assertEquals("http://iiif.io/api/image/1/context.json", service.getContext());
     }
@@ -25,6 +27,7 @@ public class ServiceBuilderTest {
     public void testId() {
         Service service = TestService
                 .aDefaultService()
+                .withIdentifier(TestService.DEFAULT_IDENTIFIER)
                 .build();
         
         assertEquals("http://www.nb.no/services/image/resolver/" + TestService.DEFAULT_IDENTIFIER, service.getId());
@@ -32,7 +35,9 @@ public class ServiceBuilderTest {
 
     @Test
     public void testProtocol() {
-        Service service = TestService.aDefaultService().build();
+        Service service = TestService.aDefaultService()
+                .withProtocol("http://iiif.io/api/image")
+                .build();
         
         assertEquals("http://iiif.io/api/image", service.getProtocol());
     }
@@ -44,7 +49,7 @@ public class ServiceBuilderTest {
                 .withWidth(10)
                 .build();
         
-        assertEquals(10, service.getWidth());
+        assertEquals(10, service.getWidth().intValue());
     }
 
     @Test
@@ -54,14 +59,14 @@ public class ServiceBuilderTest {
                 .withHeight(10)
                 .build();
         
-        assertEquals(10, service.getHeight());
+        assertEquals(10, service.getHeight().intValue());
     }
 
     @Test
     public void testPhysicalScale() {
         Service service = TestService
                 .aDefaultService()
-                .withPhysicalScale(400)
+                .withPhysicalScale(0.0025)
                 .build();
 
         assertEquals(0.0025, service.getPhysicalScale(), 0.0001f);
@@ -84,6 +89,7 @@ public class ServiceBuilderTest {
     public void testProfile() {
         Service service = TestService
                 .aDefaultService()
+                .withProfile("http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level0")
                 .build();
         
         assertEquals("http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level0", service.getProfile().get(0));

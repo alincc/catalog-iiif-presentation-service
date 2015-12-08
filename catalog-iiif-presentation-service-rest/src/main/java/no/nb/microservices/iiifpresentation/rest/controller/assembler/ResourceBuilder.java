@@ -34,12 +34,29 @@ public class ResourceBuilder {
         String id = new IiifImageServerUrlBuilder()
                 .withIdentifer(imageId)
                 .toString();
+        
+        Service physicalService = new ServiceBuilder()
+                .withContext("http://iiif.io/api/annex/service/physdim/1/context.json")
+                .withProfile("http://iiif.io/api/annex/service/physdim")
+                .withPhysicalScale(getphysicalScale(width, scanResolution))
+                .withPhysicalUnits("in")
+                .build();
+        
         Service service = new ServiceBuilder()
+            .withContext("http://iiif.io/api/image/2/context.json")
+            .withProtocol("http://iiif.io/api/image")
             .withIdentifier(imageId)
+            .withProfile("http://iiif.io/api/image/2/level1.json")
             .withWidth(width)
             .withHeight(height)
-            .withPhysicalScale(scanResolution)
+            .withService(physicalService)
             .build();
         return new Resource(id, width, height, service);
     }
+    
+    private double getphysicalScale(int width, int scanResolution) {
+        return ((double) width / (double) scanResolution) / (double) width;
+    }
+
+    
 }
