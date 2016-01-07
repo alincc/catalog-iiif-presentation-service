@@ -1,6 +1,10 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
-import no.nb.microservices.iiifpresentation.model.Canvas;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,8 +12,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.ContentResource;
 
 public class CanvasBuilderTest {
 
@@ -68,6 +72,16 @@ public class CanvasBuilderTest {
         Canvas canvas = createDefaultCanvas();
         
         assertNotNull(canvas.getImages());
+    }
+    
+    @Test
+    public void canvasCanHaveLinksToHotspots() {
+        Canvas canvas = TestCanvas.aCanvasWithHotspots().build();
+        
+        assertThat(canvas.getOtherContent().size(), is(1));
+        ContentResource resource = (ContentResource)canvas.getOtherContent().get(0);
+        assertThat(resource.getId(), is("http://localhost/v1/catalog/iiif/id1/hotspots/id1"));
+        assertThat(resource.getType(), is("sc:AnnotationList"));
     }
     
     private void createDefaultRequestAttributes() {

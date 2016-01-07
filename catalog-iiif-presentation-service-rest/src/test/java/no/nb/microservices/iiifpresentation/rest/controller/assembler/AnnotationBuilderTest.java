@@ -1,7 +1,8 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
-import no.nb.microservices.catalogmetadata.model.struct.Resource;
 import no.nb.microservices.iiifpresentation.model.Annotation;
+import no.nb.microservices.iiifpresentation.model.Resource;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,34 +26,16 @@ public class AnnotationBuilderTest {
 
     @Test
     public void annotationMustHaveId() {
-        Annotation annotation = createDefaultAnnotation();
-        
-        assertEquals("http://localhost/v1/catalog/iiif/m1/annotation/h1", annotation.getId());
-    }
+        Annotation annotation = TestAnnotation.aMinimalAnnotation().withId("annoId").build();
 
-    @Test
-    public void annotationMustHaveOn() {
-        Annotation annotation = createDefaultAnnotation();
-        
-        assertEquals("http://localhost/v1/catalog/iiif/m1/canvas/c1", annotation.getOn());
+        assertEquals("annoId", annotation.getId());
     }
 
     @Test(expected=IllegalStateException.class)
     public void whenMissingManifestIdThenThrowException() {
-        TestAnnotation.aMinimalAnnotation().withManifestId(null).build();
+        TestAnnotation.aMinimalAnnotation().withId(null).build();
     }
     
-    @Test(expected=IllegalStateException.class)
-    public void whenMissingCanvasIdThenThrowException() {
-        TestAnnotation.aMinimalAnnotation().withCanvasId(null).build();
-    }
-
-    @Test(expected=IllegalStateException.class)
-    public void whenMissingResourceHrefThenThrowException() {
-        Resource resource = new Resource();
-        TestAnnotation.aMinimalAnnotation().withResource(resource).build();
-    }
-
     private void createDefaultRequestAttributes() {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/annotation/p1");
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);

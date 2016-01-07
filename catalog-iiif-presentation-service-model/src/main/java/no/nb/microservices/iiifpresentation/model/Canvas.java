@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonPropertyOrder({"context", "id", "type", "label", "height", "width"})
 public class Canvas {
     @JsonProperty("@context")
@@ -22,6 +22,7 @@ public class Canvas {
     private int width;
     private int height;
     private List<Annotation> images;
+    private List<Object> otherContent;
 
     @JsonCreator
     public Canvas() {
@@ -29,7 +30,7 @@ public class Canvas {
         this.type = "sc:Canvas";
     }
     
-    public Canvas(Context context, String id, String label, int width, int height, List<Annotation> images) {
+    public Canvas(Context context, String id, String label, int width, int height, List<Annotation> images, List<Object> otherContent) {
         this();
         this.context = context.getContext();
         this.id = id;
@@ -37,6 +38,7 @@ public class Canvas {
         this.width = width;
         this.height = height;
         this.images = images;
+        this.otherContent = otherContent;
     }
     
     public String getContext() {
@@ -67,4 +69,7 @@ public class Canvas {
         return images;
     }
 
+    public List<Object> getOtherContent() {
+        return otherContent;
+    }
 }

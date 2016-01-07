@@ -1,15 +1,15 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
-import no.nb.microservices.catalogmetadata.model.struct.Resource;
+import no.nb.microservices.iiifpresentation.model.Resource;
 
 public final class TestAnnotation {
 
     public static AnnotationBuilder aMinimalAnnotation() {
-        Resource resource = new Resource();
-        resource.setHref("h1");
+        Resource resource = new ResourceBuilder()
+                .withId("http://www.example.org/page-to-go-to.html")
+                .build();
         return new AnnotationBuilder()
-                .withManifestId("m1")
-                .withCanvasId("c1")
+                .withId("http://www.example.org/iiif/book1/annotation/anno1")
                 .withResource(resource);
     }
 }

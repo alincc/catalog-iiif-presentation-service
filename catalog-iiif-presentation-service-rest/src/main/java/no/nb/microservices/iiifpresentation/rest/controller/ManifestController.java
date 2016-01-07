@@ -6,16 +6,31 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
+import no.nb.microservices.catalogmetadata.model.struct.Hotspot;
+import no.nb.microservices.catalogmetadata.model.struct.StructMap;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import no.nb.microservices.iiifpresentation.exception.AnnotationNotFoundException;
 import no.nb.microservices.iiifpresentation.exception.CanvasNotFoundException;
 import no.nb.microservices.iiifpresentation.model.*;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.AnnotationBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.AnnotationListBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.CanvasBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.IiifImageServerUrlBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.ManifestBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceLinkBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceTemplateLink;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.SequenceBuilder;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -93,16 +108,79 @@ public class ManifestController {
 
         Div div = getDivByHref(name, itemStructPair);
 
+        no.nb.microservices.catalogmetadata.model.struct.Resource resource = div.getResource();
+
+        Resource iiifResource = new ResourceBuilder()
+                .withId(new IiifImageServerUrlBuilder()
+                        .withIdentifer(resource.getHref())
+                        .toString())
+                .withType("dctypes:Image")
+                .withFormat("image/jpeg")
+                .withWidth(resource.getWidth())
+                .withHeight(resource.getHeight())
+                .withScanResolution(resource.getScanResolution())
+                .build();
+        
+        
+        Link id = linkTo(methodOn(ManifestController.class).getAnnotation(manifestId, name, null)).withSelfRel();
         Annotation annotation = new AnnotationBuilder()
+                .withId(id.getHref())
                 .withContext(new IiifPresentationContext())
-                .withManifestId(manifestId)
-                .withCanvasId(div.getId())
-                .withResource(div.getResource())
+                .withResource(iiifResource)
                 .build();
 
         return new ResponseEntity<>(annotation, createIiifHeaders(acceptType), HttpStatus.OK);
     }
 
+    @Traceable(description="hotspots")
+    @RequestMapping(value = "/{manifestId}/hotspots/{name}", method = RequestMethod.GET)
+    public ResponseEntity<AnnotationList> getHotspots(@PathVariable String manifestId,
+            @PathVariable String name,
+            @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
+        ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
+        
+        AnnotationList annotationList = new AnnotationListBuilder()
+                .withContext(new IiifPresentationContext())
+                .withManifestId(manifestId)
+                .withName(name)
+                .withStruct(itemStructPair.getStruct())
+                .build();
+
+        return new ResponseEntity<>(annotationList, createIiifHeaders(acceptType), HttpStatus.OK);
+    }
+    
+    @Traceable(description="hotspot")
+    @RequestMapping(value = "/{manifestId}/hotspots/{name}/{hotspotId}", method = RequestMethod.GET)
+    public ResponseEntity<Annotation> getHotspot(@PathVariable String manifestId,
+            @PathVariable String name,
+            @PathVariable String hotspotId,
+            @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
+        ItemStructPair itemStructPair = manifestService.getManifest(manifestId);
+        
+        StructMap struct = itemStructPair.getStruct();
+        Div div = struct.getDivById(name);
+        Hotspot hotspot = div.getHotspots().stream()
+                .filter(p -> p.getHszId().equalsIgnoreCase(hotspotId))
+                .collect(Collectors.toList()).get(0);
+         
+        Resource resource = new ResourceBuilder()
+            .withId(hotspot.getHs().getHsId())
+            .withType("dctypes:Text")
+            .withFormat("text/html")
+            .withDescription(hotspot.getHs().getValue())
+            .build();
+        Link id = linkTo(methodOn(ManifestController.class).getHotspot(manifestId, name, hotspot.getHszId(), null)).withSelfRel();
+        Link on = ResourceLinkBuilder.linkTo(ResourceTemplateLink.PRESENTATION, manifestId, div.getId(), hotspot.getL(), hotspot.getT(), hotspot.getWidth(), hotspot.getHeight()).withRel("on");
+        Annotation annotation = new AnnotationBuilder()
+            .withContext(new IiifPresentationContext())
+            .withId(id.getHref())
+            .withMotivation("oa:linking")
+            .withOn(on.getHref())
+            .withResource(resource)
+            .build();
+        
+        return new ResponseEntity<>(annotation, createIiifHeaders(acceptType), HttpStatus.OK);
+    }
 
     private HttpHeaders createIiifHeaders(String acceptType) {
         Context context = ContextFactory.getInstance(acceptType);

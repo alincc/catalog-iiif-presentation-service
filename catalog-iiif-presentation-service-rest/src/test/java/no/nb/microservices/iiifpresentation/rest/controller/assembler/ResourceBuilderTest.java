@@ -15,7 +15,9 @@ public class ResourceBuilderTest {
         int scanResolution = 400;
         double physicalScale = 0.0025;
         Resource resource = new ResourceBuilder()
-            .withImageId("id1")
+            .withId("http://www.nb.no/services/image/resolver/id1")
+            .withType("dctypes:Image")
+            .withFormat("image/jpeg")
             .withWidth(width)
             .withHeight(height)
             .withScanResolution(scanResolution)
@@ -23,8 +25,8 @@ public class ResourceBuilderTest {
         assertEquals("should have a id pointing to image", "http://www.nb.no/services/image/resolver/id1", resource.getId());
         assertEquals("Should have a type", "dctypes:Image", resource.getType());
         assertEquals("Should have a format", "image/jpeg", resource.getFormat());
-        assertEquals("should have widht", width, resource.getWidth());
-        assertEquals("should have height", height, resource.getHeight());
+        assertEquals("should have widht", width, resource.getWidth().intValue());
+        assertEquals("should have height", height, resource.getHeight().intValue());
         assertEquals(physicalScale, resource.getService().getService().getPhysicalScale(), 0.0001f);
         assertNotNull("Should hava a service", resource.getService());
     }

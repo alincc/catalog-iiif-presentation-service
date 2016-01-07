@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonPropertyOrder({"context", "id", "type", "motivation", "resource", "on"})
 public class Annotation {
     @JsonProperty("@context")
@@ -22,14 +22,15 @@ public class Annotation {
     public Annotation() {
         super();
         this.type = "oa:Annotation";
-        this.motivation = "sc:painting";
     }
     
     public Annotation(Context context, String id,
+            String motivation,
             String on, Resource resource) {
         this();
         this.context = context.getContext();
         this.id = id;
+        this.motivation = motivation;
         this.on = on;
         this.resource = resource;
     }

@@ -2,11 +2,19 @@ package no.nb.microservices.iiifpresentation.rest.controller;
 
 import no.nb.commons.web.util.UserUtils;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
+import no.nb.microservices.catalogmetadata.model.struct.Hotspot;
+import no.nb.microservices.catalogmetadata.model.struct.Hs;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
+import no.nb.microservices.catalogmetadata.test.struct.DivBuilder;
 import no.nb.microservices.catalogmetadata.test.struct.TestDiv;
 import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
 import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
+import no.nb.microservices.iiifpresentation.model.Annotation;
+import no.nb.microservices.iiifpresentation.model.AnnotationList;
+import no.nb.microservices.iiifpresentation.model.IiifPresentationContext;
+import no.nb.microservices.iiifpresentation.model.NullContext;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,6 +31,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,13 +45,13 @@ public class ManifestControllerTest {
     private ManifestService manifestService;
     
     @InjectMocks
-    private ManifestController homeController;
+    private ManifestController manifestController;
     
     private MockMvc mockMvc;
     
     @Before
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(homeController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(manifestController).build();
         mockRequest();
     }
     
@@ -140,6 +153,63 @@ public class ManifestControllerTest {
             .andReturn();
     }
 
+    @Test
+    public void testGetHotspots() throws Exception {
+        StructMap structMap = createDefaultStructMap();
+        structMap.addDiv(TestDiv.aDefaultDiv()
+                .withPageNumber("TEST")
+                .build());
+        structMap.addDiv(createDivWithHotspot());
+        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
+
+        ResponseEntity<AnnotationList> response = manifestController.getHotspots("id1", "DIV99", MediaType.APPLICATION_JSON_VALUE);
+        
+        AnnotationList annotationList = response.getBody();
+        assertThat(annotationList.getResources().size(), is(1));
+        assertThat(annotationList.getContext(), is(new IiifPresentationContext().getContext()));
+        Annotation annotation = annotationList.getResources().iterator().next();
+        assertThat(annotation.getContext(), is(new NullContext().getContext()));
+        assertThat(annotation.getId(), is("http://localhost/v1/catalog/iiif/id1/hotspots/DIV99/1_2_3"));
+        assertThat(annotation.getResource(), notNullValue());
+        assertThat(annotation.getResource().getId(), is("URN"));
+    }
+
+    @Test
+    public void testGetHotspot() throws Exception {
+        StructMap structMap = createDefaultStructMap();
+        structMap.addDiv(TestDiv.aDefaultDiv()
+                .withPageNumber("TEST")
+                .build());
+        Div divWithHotspot = createDivWithHotspot();
+        structMap.addDiv(divWithHotspot);
+        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
+
+        ResponseEntity<Annotation> response = manifestController.getHotspot("id1", "DIV99", "1_2_3", MediaType.APPLICATION_JSON_VALUE);
+        
+        Annotation annotation = response.getBody();
+        assertThat(annotation.getContext(), is(new IiifPresentationContext().getContext()));
+        assertThat(annotation.getId(), is("http://localhost/v1/catalog/iiif/id1/hotspots/DIV99/1_2_3"));
+        assertThat(annotation.getResource(), notNullValue());
+        assertThat(annotation.getResource().getId(), is("URN"));
+        assertThat(annotation.getResource().getDescription(), is(divWithHotspot.getHotspots().get(0).getHs().getValue()));
+    }
+    
+    private Div createDivWithHotspot() {
+        Div divWithHotspot = new DivBuilder().withPageNumber("99").build();
+        Hotspot hotspot = new Hotspot();
+        hotspot.setB(1000);
+        hotspot.setL(2000);
+        hotspot.setR(3000);
+        hotspot.setT(4000);
+        hotspot.setHszId("1_2_3");
+        Hs hs = new Hs();
+        hs.setHsId("URN");
+        hs.setValue("Summary");
+        hotspot.setHs(hs);
+        divWithHotspot.getHotspots().add(hotspot);
+        return divWithHotspot;
+    }
+    
     @Test
     public void testAnnotationJsonLdAcceptHeader() throws Exception {
         StructMap structMap = createDefaultStructMap();

@@ -1,6 +1,8 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
 import no.nb.microservices.catalogmetadata.model.struct.Div;
+import no.nb.microservices.catalogmetadata.model.struct.Hotspot;
+import no.nb.microservices.catalogmetadata.model.struct.Hs;
 import no.nb.microservices.catalogmetadata.model.struct.Resource;
 
 public final class TestCanvas {
@@ -8,6 +10,26 @@ public final class TestCanvas {
     public static CanvasBuilder aDefaultCanvas() {
         Div div = createDefaultDiv();
 
+        return new CanvasBuilder()
+                .withManifestId("id1")
+                .withDiv(div);
+    }
+
+    public static CanvasBuilder aCanvasWithHotspots() {
+        Div div = createDefaultDiv();
+
+        Hotspot hotspot = new Hotspot();
+        hotspot.setB(1000);
+        hotspot.setL(2000);
+        hotspot.setR(3000);
+        hotspot.setT(4000);
+        hotspot.setHszId("1_2_3");
+        Hs hs = new Hs();
+        hs.setHsId("URN");
+        hs.setValue("Summary");
+        hotspot.setHs(hs);
+        div.getHotspots().add(hotspot);
+        
         return new CanvasBuilder()
                 .withManifestId("id1")
                 .withDiv(div);
