@@ -1,9 +1,27 @@
 package no.nb.microservices.iiifpresentation.rest.controller;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+
 import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.catalogmetadata.model.struct.Hotspot;
@@ -12,7 +30,14 @@ import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import no.nb.microservices.iiifpresentation.exception.AnnotationNotFoundException;
 import no.nb.microservices.iiifpresentation.exception.CanvasNotFoundException;
-import no.nb.microservices.iiifpresentation.model.*;
+import no.nb.microservices.iiifpresentation.model.Annotation;
+import no.nb.microservices.iiifpresentation.model.AnnotationList;
+import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.Context;
+import no.nb.microservices.iiifpresentation.model.IiifPresentationContext;
+import no.nb.microservices.iiifpresentation.model.Manifest;
+import no.nb.microservices.iiifpresentation.model.Resource;
+import no.nb.microservices.iiifpresentation.model.Sequence;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.AnnotationBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.AnnotationListBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.CanvasBuilder;
@@ -22,20 +47,6 @@ import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceBu
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceLinkBuilder;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceTemplateLink;
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.SequenceBuilder;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/catalog/iiif")
