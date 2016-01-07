@@ -3,6 +3,7 @@ package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.hateoas.Link;
 
 import no.nb.microservices.catalogmetadata.model.struct.Div;
@@ -63,7 +64,7 @@ public class AnnotationListBuilder {
                     .withId(hotspot.getHs().getHsId())
                     .withType("dctypes:Text")
                     .withFormat("text/html")
-                    .withDescription(hotspot.getHs().getValue())
+                    .withDescription(StringEscapeUtils.escapeHtml4(hotspot.getHs().getValue()))
                     .build();
             Link annoRel = linkTo(methodOn(ManifestController.class).getHotspot(manifestId, name, hotspot.getHszId(), null)).withSelfRel();
             Annotation annotation = new AnnotationBuilder()

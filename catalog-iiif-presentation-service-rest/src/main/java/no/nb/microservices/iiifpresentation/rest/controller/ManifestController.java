@@ -5,6 +5,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
@@ -178,7 +179,7 @@ public class ManifestController {
             .withId(hotspot.getHs().getHsId())
             .withType("dctypes:Text")
             .withFormat("text/html")
-            .withDescription(hotspot.getHs().getValue())
+            .withDescription(StringEscapeUtils.escapeHtml4(hotspot.getHs().getValue()))
             .build();
         Link id = linkTo(methodOn(ManifestController.class).getHotspot(manifestId, name, hotspot.getHszId(), null)).withSelfRel();
         Link on = ResourceLinkBuilder.linkTo(ResourceTemplateLink.PRESENTATION, manifestId, div.getId(), hotspot.getL(), hotspot.getT(), hotspot.getWidth(), hotspot.getHeight()).withRel("on");
