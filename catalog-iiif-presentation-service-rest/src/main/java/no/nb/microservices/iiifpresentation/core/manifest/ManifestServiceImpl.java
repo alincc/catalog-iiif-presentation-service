@@ -35,7 +35,7 @@ public class ManifestServiceImpl implements ManifestService {
     }
 
     @Override
-    public ItemStructPair getManifest(String id) {
+    public ItemStructPair getItemAndStruct(String id) {
         try {
             SecurityInfo securityInfo = getSecurityInfo();
 

@@ -45,12 +45,12 @@ public class ManifestServiceImplTest {
     }
     
     @Test
-    public void getManifestTest() throws Exception {
+    public void getItemAndStructTest() throws Exception {
         String id = "id1";
         when(itemRepository.getById(eq(id), anyString(), anyString(), anyString(), anyString())).thenReturn(new ItemResource());
         when(metadataRepository.getStructById(eq(id), anyString(), anyString(), anyString(), anyString())).thenReturn(new StructMap());
         
-        ItemStructPair itemAndStructPair = manifestService.getManifest(id);
+        ItemStructPair itemAndStructPair = manifestService.getItemAndStruct(id);
 
         assertNotNull("Should have a item", itemAndStructPair.getItem());
         assertNotNull("Should have a struct", itemAndStructPair.getStruct());
@@ -62,7 +62,7 @@ public class ManifestServiceImplTest {
         when(itemRepository.getById(eq(id), anyString(), anyString(), anyString(), anyString())).thenReturn(new ItemResource());
         when(metadataRepository.getStructById(eq(id), anyString(), anyString(), anyString(), anyString())).thenThrow(RuntimeException.class);
         
-        manifestService.getManifest(id);
+        manifestService.getItemAndStruct(id);
     }
     
     private void mockRequest() {

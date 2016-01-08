@@ -1,5 +1,25 @@
 package no.nb.microservices.iiifpresentation.rest.controller;
 
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import no.nb.commons.web.util.UserUtils;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.catalogmetadata.model.struct.Hotspot;
@@ -12,31 +32,11 @@ import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import no.nb.microservices.iiifpresentation.model.Annotation;
 import no.nb.microservices.iiifpresentation.model.AnnotationList;
+import no.nb.microservices.iiifpresentation.model.Canvas;
 import no.nb.microservices.iiifpresentation.model.IiifPresentationContext;
+import no.nb.microservices.iiifpresentation.model.Manifest;
 import no.nb.microservices.iiifpresentation.model.NullContext;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import no.nb.microservices.iiifpresentation.model.Sequence;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ManifestControllerTest {
@@ -47,11 +47,10 @@ public class ManifestControllerTest {
     @InjectMocks
     private ManifestController manifestController;
     
-    private MockMvc mockMvc;
+    private MockHttpServletRequest request;
     
     @Before
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(manifestController).build();
         mockRequest();
     }
     
@@ -62,51 +61,47 @@ public class ManifestControllerTest {
     
     @Test
     public void testGetManifest() throws Exception {
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
         
-        MvcResult andReturn = mockMvc.perform(get("/v1/catalog/iiif/id1/manifest"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Content-Type", "application/json;charset=UTF-8"))
-            .andExpect(header().string("Link", "<http://iiif.io/api/presentation/2/context.json>;rel=\"http://www.w3.org/ns/json-ld#context\";type=\"application/ld+json\""))
-            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/manifest"))
-            .andReturn();
+        ResponseEntity<Manifest> response = manifestController.getManifest("id1", MediaType.APPLICATION_JSON_VALUE);
         
-        System.out.println(andReturn.getResponse().getContentAsString());
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat(response.getHeaders().get("Content-Type"), hasItems("application/json;charset=UTF-8"));
+        assertThat(response.getHeaders().get("Link"), hasItems("<http://iiif.io/api/presentation/2/context.json>;rel=\"http://www.w3.org/ns/json-ld#context\";type=\"application/ld+json\""));
+        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/manifest"));
     }
 
     @Test
     public void testManifestJsonLdAcceptHeader() throws Exception {
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
         
-        mockMvc.perform(get("/v1/catalog/iiif/id1/manifest")
-                .accept("application/ld+json"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))
-            .andExpect(header().doesNotExist("Link"))
-            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/manifest"))
-            .andReturn();
+        ResponseEntity<Manifest> response = manifestController.getManifest("id1", "application/ld+json");
+        
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat(response.getHeaders().get("Content-Type"), hasItems("application/ld+json;charset=UTF-8"));
+        assertThat(response.getHeaders().get("Link"), nullValue());
+        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/manifest"));
     }
 
     @Test
     public void testGetSequence() throws Exception {
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
         
-        mockMvc.perform(get("/v1/catalog/iiif/id1/sequence/normal"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/sequence/normal"))
-            .andReturn();
+        ResponseEntity<Sequence> response = manifestController.getSequence("id1", MediaType.APPLICATION_JSON_VALUE);
+        
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/sequence/normal"));
     }
 
     @Test
     public void testSequenceJsonLdAcceptHeader() throws Exception {
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, createDefaultStructMap()));
         
-        mockMvc.perform(get("/v1/catalog/iiif/id1/sequence/normal")
-                .accept("application/ld+json"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))
-            .andExpect(header().doesNotExist("Link"))
-            .andReturn();
+        ResponseEntity<Sequence> response = manifestController.getSequence("id1", "application/ld+json");
+        
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat(response.getHeaders().get("Content-Type"), hasItems("application/ld+json;charset=UTF-8"));
+        assertThat(response.getHeaders().get("Link"), nullValue());
     }
 
     @Test
@@ -116,25 +111,24 @@ public class ManifestControllerTest {
                 .withPageNumber("TEST")
                 .build();
         structMap.addDiv(div);
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
         
-        mockMvc.perform(get("/v1/catalog/iiif/id1/canvas/DIVTEST"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/canvas/DIVTEST"))
-            .andReturn();
+        ResponseEntity<Canvas> response = manifestController.getCanvas("id1", "DIVTEST", MediaType.APPLICATION_JSON_VALUE);
+
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/canvas/DIVTEST"));
     }
 
     @Test
     public void testCanvasJsonLdAcceptHeader() throws Exception {
         StructMap structMap = createDefaultStructMap();
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
-        
-        mockMvc.perform(get("/v1/catalog/iiif/id1/canvas/DIV1")
-                .accept("application/ld+json"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))
-            .andExpect(header().doesNotExist("Link"))
-            .andReturn();
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
+
+        ResponseEntity<Canvas> response = manifestController.getCanvas("id1", "DIV1", "application/ld+json");
+
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat(response.getHeaders().get("Content-Type"), hasItems("application/ld+json;charset=UTF-8"));
+        assertThat(response.getHeaders().get("Link"), nullValue());
     }
 
 
@@ -145,12 +139,28 @@ public class ManifestControllerTest {
                 .withPageNumber("TEST")
                 .build();
         structMap.addDiv(div);
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
         
-        mockMvc.perform(get("/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.@id").value("http://localhost/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"))
-            .andReturn();
+        ResponseEntity<Annotation> response = manifestController.getAnnotation("id1", "URN:NBN:no-nb_digibok_2001010100001_TEST", MediaType.APPLICATION_JSON_VALUE);
+
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"));
+    }
+    
+    @Test
+    public void testAnnotationJsonLdAcceptHeader() throws Exception {
+        StructMap structMap = createDefaultStructMap();
+        Div div = TestDiv.aDefaultDiv()
+                .withPageNumber("TEST")
+                .build();
+        structMap.addDiv(div);
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
+        
+        ResponseEntity<Annotation> response = manifestController.getAnnotation("id1", "URN:NBN:no-nb_digibok_2001010100001_TEST", "application/ld+json");
+
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
+        assertThat(response.getHeaders().get("Content-Type"), hasItems("application/ld+json;charset=UTF-8"));
+        assertThat(response.getHeaders().get("Link"), nullValue());
     }
 
     @Test
@@ -160,7 +170,7 @@ public class ManifestControllerTest {
                 .withPageNumber("TEST")
                 .build());
         structMap.addDiv(createDivWithHotspot());
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
 
         ResponseEntity<AnnotationList> response = manifestController.getHotspots("id1", "DIV99", MediaType.APPLICATION_JSON_VALUE);
         
@@ -182,7 +192,7 @@ public class ManifestControllerTest {
                 .build());
         Div divWithHotspot = createDivWithHotspot();
         structMap.addDiv(divWithHotspot);
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
+        when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
 
         ResponseEntity<Annotation> response = manifestController.getHotspot("id1", "DIV99", "1_2_3", MediaType.APPLICATION_JSON_VALUE);
         
@@ -210,25 +220,8 @@ public class ManifestControllerTest {
         return divWithHotspot;
     }
     
-    @Test
-    public void testAnnotationJsonLdAcceptHeader() throws Exception {
-        StructMap structMap = createDefaultStructMap();
-        Div div = TestDiv.aDefaultDiv()
-                .withPageNumber("TEST")
-                .build();
-        structMap.addDiv(div);
-        when(manifestService.getManifest("id1")).thenReturn(new ItemStructPair(null, structMap));
-        
-        mockMvc.perform(get("/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST")
-                .accept("application/ld+json"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Content-Type", "application/ld+json;charset=UTF-8"))
-            .andExpect(header().doesNotExist("Link"))
-            .andReturn();
-    }
-    
     private void mockRequest() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/search?q=Junit");
+        request = new MockHttpServletRequest("GET", "/v1/search?q=Junit");
         String ip = "123.45.123.123";
         request.addHeader(UserUtils.REAL_IP_HEADER, ip);
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);
