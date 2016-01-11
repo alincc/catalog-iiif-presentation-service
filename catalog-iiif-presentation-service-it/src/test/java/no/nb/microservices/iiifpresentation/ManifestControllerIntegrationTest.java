@@ -8,6 +8,11 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 import no.nb.commons.web.util.UserUtils;
+import no.nb.microservices.catalogmetadata.model.struct.Div;
+import no.nb.microservices.catalogmetadata.model.struct.Hotspot;
+import no.nb.microservices.catalogmetadata.model.struct.Hs;
+import no.nb.microservices.catalogmetadata.model.struct.StructMap;
+import no.nb.microservices.catalogmetadata.test.struct.DivBuilder;
 import no.nb.microservices.catalogmetadata.test.struct.TestStructMap;
 import no.nb.microservices.iiifpresentation.model.Annotation;
 import no.nb.microservices.iiifpresentation.model.Canvas;
@@ -58,13 +63,27 @@ public class ManifestControllerIntegrationTest {
         server = new MockWebServer();
         final Dispatcher dispatcher = new Dispatcher() {
             String itemId1Mock = IOUtils.toString(this.getClass().getResourceAsStream("catalog-item-service-id1.json"));
-            String structMap = TestStructMap.structMapToString(TestStructMap.aDefaultStructMap().build());
 
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
                 if (request.getPath().startsWith("/v1/catalog/items/id1")) {
                     return new MockResponse().setBody(itemId1Mock).setHeader("Content-Type", "application/hal+json; charset=utf-8");
                 } else if (request.getPath().startsWith("/v1/catalog/metadata/id1/struct")) {
+                    StructMap struct = TestStructMap.aDefaultStructMap().build();
+                    Div divWithHotspot = new DivBuilder().withPageNumber("99").build();
+                    Hotspot hotspot = new Hotspot();
+                    hotspot.setB(1000);
+                    hotspot.setL(2000);
+                    hotspot.setR(3000);
+                    hotspot.setT(4000);
+                    hotspot.setHszId("1_2_3");
+                    Hs hs = new Hs();
+                    hs.setHsId("URN");
+                    hs.setValue("Summary");
+                    hotspot.setHs(hs);
+                    divWithHotspot.getHotspots().add(hotspot);
+                    struct.addDiv(divWithHotspot);
+                    String structMap = TestStructMap.structMapToString(struct);
                     return new MockResponse().setBody(structMap).setHeader("Content-Type", "application/xml; charset=utf-8");
                 }
                 return new MockResponse().setResponseCode(404);
@@ -135,6 +154,36 @@ public class ManifestControllerIntegrationTest {
         
         ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
                 "http://localhost:" + port + "/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_0001", HttpMethod.GET,
+                new HttpEntity<Void>(headers), Annotation.class);
+        Annotation annotation = response.getBody();
+        
+        assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
+        assertNotNull("Annotation should not be null", annotation);
+        assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", annotation.getContext());
+        assertEquals("Should have a type", "oa:Annotation", annotation.getType());
+    }
+
+    @Test
+    public void testGetHotspots() throws Exception {
+        HttpHeaders headers = createDefaultHeaders();
+        
+        ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
+                "http://localhost:" + port + "/v1/catalog/iiif/id1/hotspots/DIV1", HttpMethod.GET,
+                new HttpEntity<Void>(headers), Annotation.class);
+        Annotation annotation = response.getBody();
+        
+        assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
+        assertNotNull("Annotation should not be null", annotation);
+        assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", annotation.getContext());
+        assertEquals("Should have a type", "sc:AnnotationList", annotation.getType());
+    }
+
+    @Test
+    public void testGetHotspot() throws Exception {
+        HttpHeaders headers = createDefaultHeaders();
+        
+        ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
+                "http://localhost:" + port + "/v1/catalog/iiif/id1/hotspots/DIV99/1_2_3", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Annotation.class);
         Annotation annotation = response.getBody();
         

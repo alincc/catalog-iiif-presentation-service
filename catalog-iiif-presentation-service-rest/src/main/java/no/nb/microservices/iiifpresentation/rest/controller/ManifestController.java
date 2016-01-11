@@ -3,6 +3,7 @@ package no.nb.microservices.iiifpresentation.rest.controller;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -31,6 +32,7 @@ import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import no.nb.microservices.iiifpresentation.exception.AnnotationNotFoundException;
 import no.nb.microservices.iiifpresentation.exception.CanvasNotFoundException;
+import no.nb.microservices.iiifpresentation.exception.HotspotNotFoundException;
 import no.nb.microservices.iiifpresentation.model.Annotation;
 import no.nb.microservices.iiifpresentation.model.AnnotationList;
 import no.nb.microservices.iiifpresentation.model.Canvas;
@@ -169,9 +171,13 @@ public class ManifestController {
         
         StructMap struct = itemStructPair.getStruct();
         Div div = struct.getDivById(name);
-        Hotspot hotspot = div.getHotspots().stream()
+        List<Hotspot> collect = div.getHotspots().stream()
                 .filter(p -> p.getHszId().equalsIgnoreCase(hotspotId))
-                .collect(Collectors.toList()).get(0);
+                .collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            throw new HotspotNotFoundException(hotspotId + "not found");
+        }
+        Hotspot hotspot = collect.get(0);
          
         Resource resource = new ResourceBuilder()
             .withId(hotspot.getHs().getHsId())

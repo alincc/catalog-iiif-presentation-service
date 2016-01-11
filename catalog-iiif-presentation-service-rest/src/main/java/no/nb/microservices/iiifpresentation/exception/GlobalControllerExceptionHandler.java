@@ -31,6 +31,11 @@ public class GlobalControllerExceptionHandler {
         response.sendError(HttpStatus.NOT_FOUND.value(), "No such Annotation");
     }
     
+    @ExceptionHandler(HotspotNotFoundException.class)
+    public void handleHotspotNotFound(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value(), "No such hotspot");
+    }
+    
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "It looks like we have a internal error in our application. The error have been logged and will be looked at by our development team")
     public void defaultHandler(HttpServletRequest req, Exception e) {
@@ -46,5 +51,5 @@ public class GlobalControllerExceptionHandler {
                 "Username: " + ((req.getUserPrincipal()  != null) ? req.getUserPrincipal().getName() : "Anonymous") + "\n"
                 , e);
     }
-    
+
 }

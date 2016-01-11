@@ -41,5 +41,12 @@ public class GlobalControllerExceptionHandlerTest {
         
         assertThat(response.getStatus(), is(HttpStatus.NOT_FOUND.value()));
     }
-    
+
+    @Test
+    public void testHotspotNotFound() throws Exception {
+        handler.handleHotspotNotFound(response);
+        
+        assertThat(response.getStatus(), is(HttpStatus.NOT_FOUND.value()));
+    }
+
 }
