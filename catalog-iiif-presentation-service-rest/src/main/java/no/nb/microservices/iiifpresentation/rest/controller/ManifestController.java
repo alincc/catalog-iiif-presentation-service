@@ -68,7 +68,7 @@ public class ManifestController {
     public ResponseEntity<Manifest> getManifest(@PathVariable String manifestId,
             @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
         ItemStructPair itemStructPair = manifestService.getItemAndStruct(manifestId);
-        //Annotation annotation = manifestService.createManifest(itemStructPair);
+        
         Manifest manifest = new ManifestBuilder(manifestId)
                 .withContext(new IiifPresentationContext())
                 .withItem(itemStructPair.getItem())
@@ -83,7 +83,7 @@ public class ManifestController {
     public ResponseEntity<Sequence> getSequence(@PathVariable String manifestId,
             @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
         ItemStructPair itemStructPair = manifestService.getItemAndStruct(manifestId);
-        //Annotation annotation = manifestService.createSequence(itemStructPair);
+        
         Sequence sequence = new SequenceBuilder()
                 .withContext(new IiifPresentationContext())
                 .withManifestId(manifestId)
@@ -99,7 +99,6 @@ public class ManifestController {
             @PathVariable String name,
             @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
         ItemStructPair itemStructPair = manifestService.getItemAndStruct(manifestId);
-        //Annotation annotation = manifestService.createCanvas(itemStructPair);
         
         Div div = getDivById(name, itemStructPair);
         
@@ -118,7 +117,6 @@ public class ManifestController {
             @PathVariable  String name,
             @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
         ItemStructPair itemStructPair = manifestService.getItemAndStruct(manifestId);
-        //Annotation annotation = manifestService.createImage(itemStructPair);
         Div div = getDivByHref(name, itemStructPair);
 
         no.nb.microservices.catalogmetadata.model.struct.Resource resource = div.getResource();
@@ -133,7 +131,6 @@ public class ManifestController {
                 .withHeight(resource.getHeight())
                 .withScanResolution(resource.getScanResolution())
                 .build();
-        
         
         Link id = linkTo(methodOn(ManifestController.class).getAnnotation(manifestId, name, null)).withSelfRel();
         Annotation annotation = new AnnotationBuilder()
@@ -152,7 +149,6 @@ public class ManifestController {
             @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
         ItemStructPair itemStructPair = manifestService.getItemAndStruct(manifestId);
         
-        //AnnotationList annotationList = manifestService.createHotspots(itemStructPair);
         AnnotationList annotationList = new AnnotationListBuilder()
                 .withContext(new IiifPresentationContext())
                 .withManifestId(manifestId)
@@ -171,7 +167,6 @@ public class ManifestController {
             @RequestHeader(value="Accept", defaultValue=MediaType.APPLICATION_JSON_VALUE) String acceptType) {
         ItemStructPair itemStructPair = manifestService.getItemAndStruct(manifestId);
         
-        //Annotation annotation = manifestService.createHotspot(itemStructPair);
         StructMap struct = itemStructPair.getStruct();
         Div div = struct.getDivById(name);
         Hotspot hotspot = div.getHotspots().stream()
