@@ -101,8 +101,7 @@ public class CanvasBuilder {
                 .withResource(iiifResource)
                 .withOn(canvasRel.getHref())
                 .build();
-        List<Annotation> images = Arrays.asList(annotation);
-        return images;
+        return Arrays.asList(annotation);
     }
 }
 
