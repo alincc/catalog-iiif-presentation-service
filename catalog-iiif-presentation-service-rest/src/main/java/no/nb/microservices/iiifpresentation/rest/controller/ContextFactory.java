@@ -8,11 +8,9 @@ public class ContextFactory {
 
     public static Context getInstance(String acceptType) {
         Context context = null;
-        switch(acceptType) {
-            case "application/ld+json":
+        if("application/ld+json".equalsIgnoreCase(acceptType)) {
                 context = new NullContext();
-                break;
-            default:
+        } else {
                 context = new IiifPresentationContext();       
         }
         return context;
