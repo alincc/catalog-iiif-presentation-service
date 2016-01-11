@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
 
     @ExceptionHandler(ItemNotFoundException.class)
     public void handleItemNotFound(HttpServletResponse response) throws IOException {
@@ -34,7 +34,7 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "It looks like we have a internal error in our application. The error have been logged and will be looked at by our development team")
     public void defaultHandler(HttpServletRequest req, Exception e) {
-        LOGGER.error("" +
+        log.error("" +
                 "Got an unexcepted exception.\n" +
                 "Request URI: " + req.getRequestURI() + "\n" +
                 "Auth Type: " + req.getAuthType() + "\n" +
