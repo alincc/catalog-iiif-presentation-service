@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("catalog-item-service")
 public interface ItemRepository {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/v1/catalog/items/{id}")
+    @RequestMapping(method = RequestMethod.GET, value = "/catalog/v1/items/{id}")
     ItemResource getById(@PathVariable("id") String id, 
             @RequestParam("X-Forwarded-Host") String xHost, 
             @RequestParam("X-Forwarded-Port") String xPort, 

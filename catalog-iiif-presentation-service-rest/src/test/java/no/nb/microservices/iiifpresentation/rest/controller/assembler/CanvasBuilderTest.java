@@ -31,7 +31,7 @@ public class CanvasBuilderTest {
     public void canvasMustHaveId() {
         Canvas canvas = createDefaultCanvas();
         
-        assertEquals("http://localhost/v1/catalog/iiif/id1/canvas/id1", canvas.getId());
+        assertEquals("http://localhost/catalog/v1/iiif/id1/canvas/id1", canvas.getId());
     }
 
     @Test(expected=IllegalStateException.class)
@@ -80,12 +80,12 @@ public class CanvasBuilderTest {
         
         assertThat(canvas.getOtherContent().size(), is(1));
         ContentResource resource = (ContentResource)canvas.getOtherContent().get(0);
-        assertThat(resource.getId(), is("http://localhost/v1/catalog/iiif/id1/hotspots/id1"));
+        assertThat(resource.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/id1"));
         assertThat(resource.getType(), is("sc:AnnotationList"));
     }
     
     private void createDefaultRequestAttributes() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/canvas/p1");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/v1/iiif/id1/canvas/p1");
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);
         RequestContextHolder.setRequestAttributes(attributes);
     }

@@ -66,7 +66,7 @@ public class ManifestServiceImplTest {
     }
     
     private void mockRequest() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/manifest");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/v1/iiif/id1/manifest");
         String ip = "123.45.123.123";
         request.addHeader(UserUtils.REAL_IP_HEADER, ip);
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);

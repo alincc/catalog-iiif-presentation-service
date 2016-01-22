@@ -52,8 +52,8 @@ import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceTe
 import no.nb.microservices.iiifpresentation.rest.controller.assembler.SequenceBuilder;
 
 @RestController
-@RequestMapping("/v1/catalog/iiif")
-@Api(value = "/iiif", description = "Home api")
+@RequestMapping("/catalog/v1/iiif")
+@Api(value = "/catalog/v1/iiif", description = "Home api")
 public class ManifestController {
 
     private final ManifestService manifestService;

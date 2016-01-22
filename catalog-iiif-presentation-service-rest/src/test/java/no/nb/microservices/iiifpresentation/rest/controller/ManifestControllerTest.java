@@ -68,7 +68,7 @@ public class ManifestControllerTest {
         assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
         assertThat(response.getHeaders().get("Content-Type"), hasItems("application/json;charset=UTF-8"));
         assertThat(response.getHeaders().get("Link"), hasItems("<http://iiif.io/api/presentation/2/context.json>;rel=\"http://www.w3.org/ns/json-ld#context\";type=\"application/ld+json\""));
-        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/manifest"));
+        assertThat(response.getBody().getId(), is("http://localhost/catalog/v1/iiif/id1/manifest"));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class ManifestControllerTest {
         assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
         assertThat(response.getHeaders().get("Content-Type"), hasItems("application/ld+json;charset=UTF-8"));
         assertThat(response.getHeaders().get("Link"), nullValue());
-        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/manifest"));
+        assertThat(response.getBody().getId(), is("http://localhost/catalog/v1/iiif/id1/manifest"));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ManifestControllerTest {
         ResponseEntity<Sequence> response = manifestController.getSequence("id1", MediaType.APPLICATION_JSON_VALUE);
         
         assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
-        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/sequence/normal"));
+        assertThat(response.getBody().getId(), is("http://localhost/catalog/v1/iiif/id1/sequence/normal"));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class ManifestControllerTest {
         ResponseEntity<Canvas> response = manifestController.getCanvas("id1", "DIVTEST", MediaType.APPLICATION_JSON_VALUE);
 
         assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
-        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/canvas/DIVTEST"));
+        assertThat(response.getBody().getId(), is("http://localhost/catalog/v1/iiif/id1/canvas/DIVTEST"));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ManifestControllerTest {
         ResponseEntity<Annotation> response = manifestController.getAnnotation("id1", "URN:NBN:no-nb_digibok_2001010100001_TEST", MediaType.APPLICATION_JSON_VALUE);
 
         assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
-        assertThat(response.getBody().getId(), is("http://localhost/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"));
+        assertThat(response.getBody().getId(), is("http://localhost/catalog/v1/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_TEST"));
     }
     
     @Test
@@ -179,7 +179,7 @@ public class ManifestControllerTest {
         assertThat(annotationList.getContext(), is(new IiifPresentationContext().getContext()));
         Annotation annotation = annotationList.getResources().iterator().next();
         assertThat(annotation.getContext(), is(new NullContext().getContext()));
-        assertThat(annotation.getId(), is("http://localhost/v1/catalog/iiif/id1/hotspots/DIV99/1_2_3"));
+        assertThat(annotation.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/DIV99/1_2_3"));
         assertThat(annotation.getResource(), notNullValue());
         assertThat(annotation.getResource().getId(), is("URN"));
     }
@@ -198,7 +198,7 @@ public class ManifestControllerTest {
         
         Annotation annotation = response.getBody();
         assertThat(annotation.getContext(), is(new IiifPresentationContext().getContext()));
-        assertThat(annotation.getId(), is("http://localhost/v1/catalog/iiif/id1/hotspots/DIV99/1_2_3"));
+        assertThat(annotation.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/DIV99/1_2_3"));
         assertThat(annotation.getResource(), notNullValue());
         assertThat(annotation.getResource().getId(), is("URN"));
         assertThat(annotation.getResource().getDescription(), is(divWithHotspot.getHotspots().get(0).getHs().getValue()));
@@ -221,7 +221,7 @@ public class ManifestControllerTest {
     }
     
     private void mockRequest() {
-        request = new MockHttpServletRequest("GET", "/v1/search?q=Junit");
+        request = new MockHttpServletRequest("GET", "/catalog/v1/search?q=Junit");
         String ip = "123.45.123.123";
         request.addHeader(UserUtils.REAL_IP_HEADER, ip);
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("catalog-metadata-service")
 public interface MetadataRepository {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/v1/catalog/metadata/{id}/struct", produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(method = RequestMethod.GET, value = "/catalog/v1/metadata/{id}/struct", produces = MediaType.APPLICATION_XML_VALUE)
     StructMap getStructById(@PathVariable("id") String id, 
             @RequestParam("X-Forwarded-Host") String xHost, 
             @RequestParam("X-Forwarded-Port") String xPort, 

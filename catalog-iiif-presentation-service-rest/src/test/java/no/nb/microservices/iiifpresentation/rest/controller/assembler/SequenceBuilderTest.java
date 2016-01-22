@@ -32,7 +32,7 @@ public class SequenceBuilderTest {
                 .withStruct(TestStructMap.aDefaultStructMap().build())
                 .build();
 
-        assertNotNull("http://localhost/v1/catalog/iiif/id1/sequence/normal", sequence.getId());
+        assertNotNull("http://localhost/catalog/v1/iiif/id1/sequence/normal", sequence.getId());
     }
 
     @Test(expected=IllegalStateException.class)
@@ -62,7 +62,7 @@ public class SequenceBuilderTest {
     }
 
     private void createDefaultRequestAttributes() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/manifest");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/v1/iiif/id1/manifest");
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);
         RequestContextHolder.setRequestAttributes(attributes);
     }

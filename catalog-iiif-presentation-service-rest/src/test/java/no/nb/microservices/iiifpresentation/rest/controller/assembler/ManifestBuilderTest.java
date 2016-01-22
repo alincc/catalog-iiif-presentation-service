@@ -18,7 +18,7 @@ public class ManifestBuilderTest {
 
     @Before
     public void init() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/manifest");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/v1/iiif/id1/manifest");
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);
         RequestContextHolder.setRequestAttributes(attributes);
     }
@@ -40,7 +40,7 @@ public class ManifestBuilderTest {
         Manifest manifest = new ManifestBuilder(id).withItem(item).withStruct(struct).build();
 
         assertNotNull("Manifest should not be null", manifest);
-        assertEquals("Should have a id", "http://localhost/v1/catalog/iiif/"+id+"/manifest", manifest.getId());
+        assertEquals("Should have a id", "http://localhost/catalog/v1/iiif/"+id+"/manifest", manifest.getId());
         assertTrue("Should have a description", !manifest.getDescription().isEmpty());
         assertTrue("Should have a sequence", manifest.getSequences().size() == 1);
     }

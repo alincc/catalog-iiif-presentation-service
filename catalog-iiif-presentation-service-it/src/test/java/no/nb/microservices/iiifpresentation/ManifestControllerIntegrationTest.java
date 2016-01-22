@@ -66,9 +66,9 @@ public class ManifestControllerIntegrationTest {
 
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
-                if (request.getPath().startsWith("/v1/catalog/items/id1")) {
+                if (request.getPath().startsWith("/catalog/v1/items/id1")) {
                     return new MockResponse().setBody(itemId1Mock).setHeader("Content-Type", "application/hal+json; charset=utf-8");
-                } else if (request.getPath().startsWith("/v1/catalog/metadata/id1/struct")) {
+                } else if (request.getPath().startsWith("/catalog/v1/metadata/id1/struct")) {
                     StructMap struct = TestStructMap.aDefaultStructMap().build();
                     Div divWithHotspot = new DivBuilder().withPageNumber("99").build();
                     Hotspot hotspot = new Hotspot();
@@ -107,7 +107,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();        
         
         ResponseEntity<Manifest> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/v1/catalog/iiif/id1/manifest", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/manifest", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Manifest.class);
         Manifest manifest = response.getBody();
         
@@ -123,7 +123,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Sequence> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/v1/catalog/iiif/id1/sequence/normal", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/sequence/normal", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Sequence.class);
         Sequence sequence = response.getBody();
         
@@ -138,7 +138,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Canvas> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/v1/catalog/iiif/id1/canvas/DIV1", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/canvas/DIV1", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Canvas.class);
         Canvas canvas = response.getBody();
         
@@ -153,7 +153,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/v1/catalog/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_0001", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/annotation/URN:NBN:no-nb_digibok_2001010100001_0001", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Annotation.class);
         Annotation annotation = response.getBody();
         
@@ -168,7 +168,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/v1/catalog/iiif/id1/hotspots/DIV1", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/hotspots/DIV1", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Annotation.class);
         Annotation annotation = response.getBody();
         
@@ -183,7 +183,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/v1/catalog/iiif/id1/hotspots/DIV99/1_2_3", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/hotspots/DIV99/1_2_3", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Annotation.class);
         Annotation annotation = response.getBody();
         

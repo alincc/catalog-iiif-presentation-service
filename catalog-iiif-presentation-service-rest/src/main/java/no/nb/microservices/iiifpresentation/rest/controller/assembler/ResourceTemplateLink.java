@@ -2,7 +2,7 @@ package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
 public enum ResourceTemplateLink {
 
-    PRESENTATION ("/v1/catalog/iiif/{id}/canvas/{name}#{x},{y},{w},{h}");
+    PRESENTATION ("/catalog/v1/iiif/{id}/canvas/{name}#{x},{y},{w},{h}");
     private final String resourceLink;
 
     ResourceTemplateLink(String resourceLink) {

@@ -37,7 +37,7 @@ public class AnnotationBuilderTest {
     }
     
     private void createDefaultRequestAttributes() {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/v1/catalog/iiif/id1/annotation/p1");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/v1/iiif/id1/annotation/p1");
         ServletRequestAttributes attributes = new ServletRequestAttributes(request);
         RequestContextHolder.setRequestAttributes(attributes);
     }
