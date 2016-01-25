@@ -43,7 +43,7 @@ public class SequenceBuilder {
         validate();
         Link selfRel = linkTo(methodOn(ManifestController.class).getSequence(manifestId, null)).withSelfRel();
         Sequence sequence = new Sequence(context, selfRel.getHref());
-        
+
         for(Div div : struct.getDivs()) {
             Canvas canvas = new CanvasBuilder()
                 .withManifestId(manifestId)

@@ -138,7 +138,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Canvas> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/catalog/v1/iiif/id1/canvas/DIV1", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/canvas/URN:NBN:no-nb_digibok_2001010100001_C1", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Canvas.class);
         Canvas canvas = response.getBody();
         

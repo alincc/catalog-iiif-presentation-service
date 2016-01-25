@@ -31,7 +31,7 @@ public class CanvasBuilderTest {
     public void canvasMustHaveId() {
         Canvas canvas = createDefaultCanvas();
         
-        assertEquals("http://localhost/catalog/v1/iiif/id1/canvas/id1", canvas.getId());
+        assertEquals("http://localhost/catalog/v1/iiif/id1/canvas/URN:NBN:no-nb_digibok_2001010100001_123", canvas.getId());
     }
 
     @Test(expected=IllegalStateException.class)

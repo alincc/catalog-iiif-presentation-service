@@ -113,10 +113,10 @@ public class ManifestControllerTest {
         structMap.addDiv(div);
         when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
         
-        ResponseEntity<Canvas> response = manifestController.getCanvas("id1", "DIVTEST", MediaType.APPLICATION_JSON_VALUE);
+        ResponseEntity<Canvas> response = manifestController.getCanvas("id1", "URN:NBN:no-nb_digibok_2001010100001_TEST", MediaType.APPLICATION_JSON_VALUE);
 
         assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
-        assertThat(response.getBody().getId(), is("http://localhost/catalog/v1/iiif/id1/canvas/DIVTEST"));
+        assertThat(response.getBody().getId(), is("http://localhost/catalog/v1/iiif/id1/canvas/URN:NBN:no-nb_digibok_2001010100001_TEST"));
     }
 
     @Test
@@ -124,7 +124,7 @@ public class ManifestControllerTest {
         StructMap structMap = createDefaultStructMap();
         when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
 
-        ResponseEntity<Canvas> response = manifestController.getCanvas("id1", "DIV1", "application/ld+json");
+        ResponseEntity<Canvas> response = manifestController.getCanvas("id1", "URN:NBN:no-nb_digibok_2001010100001_C1", "application/ld+json");
 
         assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
         assertThat(response.getHeaders().get("Content-Type"), hasItems("application/ld+json;charset=UTF-8"));

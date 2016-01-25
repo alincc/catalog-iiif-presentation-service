@@ -46,7 +46,7 @@ public class CanvasBuilder {
     public Canvas build() {
         validate();
 
-        Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, div.getId(), null)).withSelfRel();
+        Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, div.getResource().getHref(), null)).withSelfRel();
         List<Annotation> images = createImages();
         
         List<Object> hotspots = createHotspots();
@@ -77,16 +77,13 @@ public class CanvasBuilder {
     }
 
     private List<Annotation> createImages() {
-        String canvasId = div.getId();
+        String canvasId = div.getResource().getHref();
         Link canvasRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, canvasId, null)).withSelfRel();
 
         no.nb.microservices.catalogmetadata.model.struct.Resource resource = div.getResource();
-        String id = new IiifImageServerUrlBuilder()
-                .withIdentifer(resource.getHref())
-                .toString();
 
         Resource iiifResource = new ResourceBuilder()
-                .withId(id)
+                .withId(resource.getHref())
                 .withType("dctypes:Image")
                 .withFormat("image/jpeg")
                 .withWidth(resource.getWidth())
@@ -94,7 +91,7 @@ public class CanvasBuilder {
                 .withScanResolution(resource.getScanResolution())
                 .build();
         
-        Link selfRel = linkTo(methodOn(ManifestController.class).getAnnotation(manifestId, div.getId(), null)).withSelfRel();
+        Link selfRel = linkTo(methodOn(ManifestController.class).getAnnotation(manifestId, canvasId, null)).withSelfRel();
         Annotation annotation = new AnnotationBuilder()
                 .withId(selfRel.getHref())
                 .withMotivation("sc:painting")
