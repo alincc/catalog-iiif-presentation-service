@@ -23,16 +23,16 @@ public class CanvasBuilder {
     private Context context;
     private String manifestId;
     private Div div;
-    
+
     public CanvasBuilder() {
         context = new NullContext();
     }
-    
+
     public CanvasBuilder withContext(Context context) {
         this.context = context;
         return this;
     }
-    
+
     public CanvasBuilder withManifestId(String manifestId) {
         this.manifestId = manifestId;
         return this;
@@ -42,13 +42,13 @@ public class CanvasBuilder {
         this.div = div;
         return this;
     }
-    
+
     public Canvas build() {
         validate();
 
         Link selfRel = linkTo(methodOn(ManifestController.class).getCanvas(manifestId, div.getResource().getHref(), null)).withSelfRel();
         List<Annotation> images = createImages();
-        
+
         List<Object> hotspots = createHotspots();
         return new Canvas(context, selfRel.getHref(), div.getType(), div.getResource().getWidth(), div.getResource().getHeight(), images, hotspots);
     }
@@ -57,12 +57,12 @@ public class CanvasBuilder {
         if (div.getHotspots() == null || div.getHotspots().isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         ContentResource contentResource = new ContentResource();
-        Link hotspotRel = linkTo(methodOn(ManifestController.class).getHotspots(manifestId, div.getId(), null)).withSelfRel();
+        Link hotspotRel = linkTo(methodOn(ManifestController.class).getHotspots(manifestId, div.getResource().getHref(), null)).withSelfRel();
         contentResource.setId(hotspotRel.getHref());
         contentResource.setType("sc:AnnotationList");
-        
+
         return Arrays.asList(contentResource);
     }
 
@@ -90,7 +90,7 @@ public class CanvasBuilder {
                 .withHeight(resource.getHeight())
                 .withScanResolution(resource.getScanResolution())
                 .build();
-        
+
         Link selfRel = linkTo(methodOn(ManifestController.class).getAnnotation(manifestId, canvasId, null)).withSelfRel();
         Annotation annotation = new AnnotationBuilder()
                 .withId(selfRel.getHref())
@@ -101,4 +101,3 @@ public class CanvasBuilder {
         return Arrays.asList(annotation);
     }
 }
-

@@ -40,6 +40,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -78,7 +79,7 @@ public class ManifestControllerIntegrationTest {
                     hotspot.setT(4000);
                     hotspot.setHszId("1_2_3");
                     Hs hs = new Hs();
-                    hs.setHsId("URN");
+                    hs.setHsId("URN_5_6_7");
                     hs.setValue("Summary");
                     hotspot.setHs(hs);
                     divWithHotspot.getHotspots().add(hotspot);
@@ -168,10 +169,10 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/catalog/v1/iiif/id1/hotspots/DIV1", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/hotspots/URN:NBN:no-nb_digibok_2001010100001_0099", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Annotation.class);
         Annotation annotation = response.getBody();
-        
+
         assertTrue("Repsonse code should be successful", response.getStatusCode().is2xxSuccessful());
         assertNotNull("Annotation should not be null", annotation);
         assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", annotation.getContext());
@@ -183,7 +184,7 @@ public class ManifestControllerIntegrationTest {
         HttpHeaders headers = createDefaultHeaders();
         
         ResponseEntity<Annotation> response = new TestRestTemplate().exchange(
-                "http://localhost:" + port + "/catalog/v1/iiif/id1/hotspots/DIV99/1_2_3", HttpMethod.GET,
+                "http://localhost:" + port + "/catalog/v1/iiif/id1/hotspots/URN:NBN:no-nb_digibok_2001010100001_0099/1_2_3", HttpMethod.GET,
                 new HttpEntity<Void>(headers), Annotation.class);
         Annotation annotation = response.getBody();
         
@@ -191,6 +192,8 @@ public class ManifestControllerIntegrationTest {
         assertNotNull("Annotation should not be null", annotation);
         assertEquals("Should hava a context", "http://iiif.io/api/presentation/2/context.json", annotation.getContext());
         assertEquals("Should have a type", "oa:Annotation", annotation.getType());
+        assertThat(annotation.getOn(), is("http://localhost:" + port + "/catalog/v1/iiif/id1/canvas/URN:NBN:no-nb_digibok_2001010100001_0099#2000,4000,1000,-3000"));
+        assertThat(annotation.getResource().getId(), is("http://localhost:" + port + "/catalog/v1/iiif/URN_5_6/canvas/URN_5_6_7"));
     }
 
     private HttpHeaders createDefaultHeaders() {

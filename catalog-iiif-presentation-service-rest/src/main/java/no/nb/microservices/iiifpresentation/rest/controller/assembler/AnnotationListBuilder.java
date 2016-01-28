@@ -54,14 +54,14 @@ public class AnnotationListBuilder {
 
         Link selfRel = linkTo(methodOn(ManifestController.class).getHotspots(manifestId, name, null)).withSelfRel();
         annotationList.setId(selfRel.getHref());
-        Div div = struct.getDivById(name);
+        Div div = struct.getDivByHref(name);
         if (div == null) {
             throw new AnnotationNotFoundException(name + " not found"); 
         }
         for(Hotspot hotspot : div.getHotspots()) {
-            String on = createOnLink(manifestId, div.getId(), hotspot.getL(), hotspot.getT(), hotspot.getWidth(), hotspot.getHeight()).getHref(); 
+            String on = createOnLink(manifestId, div.getResource().getHref(), hotspot.getL(), hotspot.getT(), hotspot.getWidth(), hotspot.getHeight()).getHref();
             Resource resource = new ResourceBuilder()
-                    .withId(hotspot.getHs().getHsId())
+                    .withId(getResourceLinkId(hotspot))
                     .withType("dctypes:Text")
                     .withFormat("text/html")
                     .withDescription(StringEscapeUtils.escapeHtml4(hotspot.getHs().getValue()))
@@ -78,6 +78,13 @@ public class AnnotationListBuilder {
             annotationList.addResource(annotation);
         }
         return annotationList;
+    }
+
+    private String getResourceLinkId(Hotspot hotspot) {
+        String pageId = hotspot.getHs().getHsId();
+        final int lastIndexOf_ = pageId.lastIndexOf("_");
+        String resourceId = pageId.substring(0, lastIndexOf_);
+        return linkTo(methodOn(ManifestController.class).getCanvas(resourceId, pageId, null)).withRel("resourceCanvasLink").getHref();
     }
 
     private Link createOnLink(String manifestId, String canvasId, int x, int y, int w, int h) {

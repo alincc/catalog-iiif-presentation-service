@@ -1,10 +1,7 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
+import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.ContentResource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +9,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import no.nb.microservices.iiifpresentation.model.Canvas;
-import no.nb.microservices.iiifpresentation.model.ContentResource;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 public class CanvasBuilderTest {
 
@@ -80,7 +77,7 @@ public class CanvasBuilderTest {
         
         assertThat(canvas.getOtherContent().size(), is(1));
         ContentResource resource = (ContentResource)canvas.getOtherContent().get(0);
-        assertThat(resource.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/id1"));
+        assertThat(resource.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/URN:NBN:no-nb_digibok_2001010100001_123"));
         assertThat(resource.getType(), is("sc:AnnotationList"));
     }
     

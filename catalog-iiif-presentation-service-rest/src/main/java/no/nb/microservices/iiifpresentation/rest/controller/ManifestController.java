@@ -1,9 +1,29 @@
 package no.nb.microservices.iiifpresentation.rest.controller;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+
 import no.nb.htrace.annotation.Traceable;
 import no.nb.microservices.catalogmetadata.model.struct.Div;
 import no.nb.microservices.catalogmetadata.model.struct.Hotspot;
@@ -12,22 +32,22 @@ import no.nb.microservices.iiifpresentation.core.manifest.ItemStructPair;
 import no.nb.microservices.iiifpresentation.core.manifest.ManifestService;
 import no.nb.microservices.iiifpresentation.exception.AnnotationNotFoundException;
 import no.nb.microservices.iiifpresentation.exception.HotspotNotFoundException;
-import no.nb.microservices.iiifpresentation.model.*;
-import no.nb.microservices.iiifpresentation.rest.controller.assembler.*;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import no.nb.microservices.iiifpresentation.model.Annotation;
+import no.nb.microservices.iiifpresentation.model.AnnotationList;
+import no.nb.microservices.iiifpresentation.model.Canvas;
+import no.nb.microservices.iiifpresentation.model.Context;
+import no.nb.microservices.iiifpresentation.model.IiifPresentationContext;
+import no.nb.microservices.iiifpresentation.model.Manifest;
+import no.nb.microservices.iiifpresentation.model.Resource;
+import no.nb.microservices.iiifpresentation.model.Sequence;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.AnnotationBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.AnnotationListBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.CanvasBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.ManifestBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceLinkBuilder;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.ResourceTemplateLink;
+import no.nb.microservices.iiifpresentation.rest.controller.assembler.SequenceBuilder;
 
 @RestController
 @RequestMapping("/catalog/v1/iiif")
@@ -146,7 +166,7 @@ public class ManifestController {
         ItemStructPair itemStructPair = manifestService.getItemAndStruct(manifestId);
         
         StructMap struct = itemStructPair.getStruct();
-        Div div = struct.getDivById(name);
+        Div div = struct.getDivByHref(name);
         List<Hotspot> collect = div.getHotspots().stream()
                 .filter(p -> p.getHszId().equalsIgnoreCase(hotspotId))
                 .collect(Collectors.toList());
@@ -154,15 +174,15 @@ public class ManifestController {
             throw new HotspotNotFoundException(hotspotId + "not found");
         }
         Hotspot hotspot = collect.get(0);
-         
+
         Resource resource = new ResourceBuilder()
-            .withId(hotspot.getHs().getHsId())
+            .withId(getResourceLinkId(hotspot))
             .withType("dctypes:Text")
             .withFormat("text/html")
             .withDescription(StringEscapeUtils.escapeHtml4(hotspot.getHs().getValue()))
             .build();
         Link id = linkTo(methodOn(ManifestController.class).getHotspot(manifestId, name, hotspot.getHszId(), null)).withSelfRel();
-        Link on = ResourceLinkBuilder.linkTo(ResourceTemplateLink.PRESENTATION, manifestId, div.getId(), hotspot.getL(), hotspot.getT(), hotspot.getWidth(), hotspot.getHeight()).withRel("on");
+        Link on = ResourceLinkBuilder.linkTo(ResourceTemplateLink.PRESENTATION, manifestId, div.getResource().getHref(), hotspot.getL(), hotspot.getT(), hotspot.getWidth(), hotspot.getHeight()).withRel("on");
         Annotation annotation = new AnnotationBuilder()
             .withContext(new IiifPresentationContext())
             .withId(id.getHref())
@@ -170,8 +190,14 @@ public class ManifestController {
             .withOn(on.getHref())
             .withResource(resource)
             .build();
-        
+
         return new ResponseEntity<>(annotation, createIiifHeaders(acceptType), HttpStatus.OK);
+    }
+
+    private String getResourceLinkId(Hotspot hotspot) {
+        String pageId = hotspot.getHs().getHsId();
+        String resourceId = pageId.substring(0, pageId.lastIndexOf("_"));
+        return linkTo(methodOn(ManifestController.class).getCanvas(resourceId, pageId, null)).withRel("resourceCanvasLink").getHref();
     }
 
     private HttpHeaders createIiifHeaders(String acceptType) {

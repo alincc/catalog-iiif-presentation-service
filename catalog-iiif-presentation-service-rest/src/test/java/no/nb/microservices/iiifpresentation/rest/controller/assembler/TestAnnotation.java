@@ -10,6 +10,7 @@ public final class TestAnnotation {
                 .build();
         return new AnnotationBuilder()
                 .withId("http://www.example.org/iiif/book1/annotation/anno1")
+                .withOn("http://www.example.org/iiif/book1/annotation/anno1/canvas/urn#1,1,1,1")
                 .withResource(resource);
     }
 }

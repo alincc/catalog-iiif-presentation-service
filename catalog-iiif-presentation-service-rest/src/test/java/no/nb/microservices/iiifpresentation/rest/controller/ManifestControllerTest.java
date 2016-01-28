@@ -172,16 +172,16 @@ public class ManifestControllerTest {
         structMap.addDiv(createDivWithHotspot());
         when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
 
-        ResponseEntity<AnnotationList> response = manifestController.getHotspots("id1", "DIV99", MediaType.APPLICATION_JSON_VALUE);
+        ResponseEntity<AnnotationList> response = manifestController.getHotspots("id1", "URN:NBN:no-nb_digibok_2001010100001_0099", MediaType.APPLICATION_JSON_VALUE);
         
         AnnotationList annotationList = response.getBody();
         assertThat(annotationList.getResources().size(), is(1));
         assertThat(annotationList.getContext(), is(new IiifPresentationContext().getContext()));
         Annotation annotation = annotationList.getResources().iterator().next();
         assertThat(annotation.getContext(), is(new NullContext().getContext()));
-        assertThat(annotation.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/DIV99/1_2_3"));
+        assertThat(annotation.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/URN:NBN:no-nb_digibok_2001010100001_0099/1_2_3"));
         assertThat(annotation.getResource(), notNullValue());
-        assertThat(annotation.getResource().getId(), is("URN"));
+        assertThat(annotation.getResource().getId(), is("http://localhost/catalog/v1/iiif/URN_5_6/canvas/URN_5_6_7"));
     }
 
     @Test
@@ -194,13 +194,13 @@ public class ManifestControllerTest {
         structMap.addDiv(divWithHotspot);
         when(manifestService.getItemAndStruct("id1")).thenReturn(new ItemStructPair(null, structMap));
 
-        ResponseEntity<Annotation> response = manifestController.getHotspot("id1", "DIV99", "1_2_3", MediaType.APPLICATION_JSON_VALUE);
-        
+        ResponseEntity<Annotation> response = manifestController.getHotspot("id1", "URN:NBN:no-nb_digibok_2001010100001_0099", "1_2_3", MediaType.APPLICATION_JSON_VALUE);
+
         Annotation annotation = response.getBody();
         assertThat(annotation.getContext(), is(new IiifPresentationContext().getContext()));
-        assertThat(annotation.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/DIV99/1_2_3"));
+        assertThat(annotation.getId(), is("http://localhost/catalog/v1/iiif/id1/hotspots/URN:NBN:no-nb_digibok_2001010100001_0099/1_2_3"));
         assertThat(annotation.getResource(), notNullValue());
-        assertThat(annotation.getResource().getId(), is("URN"));
+        assertThat(annotation.getResource().getId(), is("http://localhost/catalog/v1/iiif/URN_5_6/canvas/URN_5_6_7"));
         assertThat(annotation.getResource().getDescription(), is(divWithHotspot.getHotspots().get(0).getHs().getValue()));
     }
     
@@ -213,7 +213,7 @@ public class ManifestControllerTest {
         hotspot.setT(4000);
         hotspot.setHszId("1_2_3");
         Hs hs = new Hs();
-        hs.setHsId("URN");
+        hs.setHsId("URN_5_6_7");
         hs.setValue("Summary");
         hotspot.setHs(hs);
         divWithHotspot.getHotspots().add(hotspot);
