@@ -3,33 +3,5 @@ info:
     name: catalog-iiif-presentation-service
     description: IIIF Presentation API
 
-endpoints:
-  restart:
-    enabled: true
-  refresh:
-    enabled: true
-
 server:
-  port: 8050
-
-eureka:
-  instance:
-    preferIpAddress: true
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-
-zipkin:
-    collector-hostname: localhost
-
----
-spring:
-    profiles: docker
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://discovery:8761/eureka/
-      
-zipkin:
-    collector-hostname: zipkinCollector
+  port: 0
