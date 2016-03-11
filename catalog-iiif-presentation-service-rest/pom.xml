@@ -31,7 +31,7 @@
         <dependency>
             <groupId>no.nb.microservices.catalogitem</groupId>
             <artifactId>catalog-item-service-model</artifactId>
-            <version>0.0.1-151</version>
+            <version>0.0.1-222</version>
         </dependency>
         <dependency>
             <groupId>no.nb.microservices</groupId>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>no.nb.commons</groupId>
             <artifactId>commons-web-utils</artifactId>
-            <version>-15</version>
+            <version>0.0.1-19</version>
         </dependency>
         <dependency>
             <groupId>no.nb.htrace</groupId>
@@ -170,11 +170,11 @@
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.4.0</version>
+                <version>0.4.4</version>
                 <configuration>
                     <imageName>${docker.registry}/${docker.image.prefix}/${project.artifactId}</imageName>
                     <baseImage>java:8-jre</baseImage>
-                    <entryPoint>java $JAVA_OPTS $OTHER_OPTS -Dspring.profiles.active=docker -jar /${project.build.finalName}.jar</entryPoint>
+                    <entryPoint>java $JAVA_OPTS $OTHER_OPTS -jar /${project.build.finalName}.jar</entryPoint>
                     <imageTags>
                         <imageTag>${project.version}</imageTag>
                         <imageTag>latest</imageTag>

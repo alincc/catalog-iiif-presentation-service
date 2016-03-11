@@ -4,7 +4,7 @@ info:
     description: IIIF Presentation API
 
 server:
-  port: 0
+  port: 8011
 
 zipkin:
     collector-hostname: localhost
