@@ -1,25 +1,20 @@
 package no.nb.microservices.iiifpresentation.rest.controller.assembler;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.hateoas.Link;
-
 import no.nb.microservices.catalogitem.rest.model.ItemResource;
 import no.nb.microservices.catalogitem.rest.model.Metadata;
 import no.nb.microservices.catalogitem.rest.model.Person;
 import no.nb.microservices.catalogitem.rest.model.Role;
 import no.nb.microservices.catalogmetadata.model.struct.StructMap;
-import no.nb.microservices.iiifpresentation.model.Context;
-import no.nb.microservices.iiifpresentation.model.LabelValue;
-import no.nb.microservices.iiifpresentation.model.Manifest;
-import no.nb.microservices.iiifpresentation.model.NullContext;
-import no.nb.microservices.iiifpresentation.model.Sequence;
+import no.nb.microservices.iiifpresentation.model.*;
 import no.nb.microservices.iiifpresentation.rest.controller.ManifestController;
+import org.springframework.hateoas.Link;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 public class ManifestBuilder {
 
@@ -56,7 +51,7 @@ public class ManifestBuilder {
         manifest.setType("sc:Manifest");
         Link selfRel = linkTo(methodOn(ManifestController.class).getManifest(id, null)).withSelfRel();
         manifest.setId(selfRel.getHref());
-        manifest.setLabel((item != null && item.getMetadata() != null && item.getTitle() != null) ? item.getTitle() : "Untitled");
+        manifest.setLabel((item != null && item.getMetadata() != null && item.getMetadata().getTitle() != null) ? item.getMetadata().getTitle() : "Untitled");
         if (item != null) {
             Metadata metadata = item.getMetadata();
             if (metadata != null) {
