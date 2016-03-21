@@ -13,6 +13,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import no.nb.htrace.annotation.EnableTracing;
+import no.nb.metrics.annotation.EnableMetrics;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -23,6 +24,7 @@ import no.nb.htrace.annotation.EnableTracing;
 @EnableAsync
 @RefreshScope
 @EnableTracing
+@EnableMetrics
 @EnableHypermediaSupport(type= {HypermediaType.HAL})
 public class Application {
 
