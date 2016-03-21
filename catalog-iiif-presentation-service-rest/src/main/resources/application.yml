@@ -2,6 +2,11 @@ info:
   app:
     name: catalog-iiif-presentation-service
     description: IIIF Presentation API
+    build:
+        artifact: ${project.artifactId}
+        name: ${project.name}
+        description: ${project.description}
+        version: ${project.version}
 
 server:
   port: 8011
